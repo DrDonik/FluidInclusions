@@ -432,7 +432,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp = NaN;
                     obj.store_r_sp = NaN;
                 else
-                    [obj.store_T_sp, obj.store_r_sp] = get_T_sp(obj.Th_inf, obj.V, 1);
+                    [obj.store_T_sp, obj.store_r_sp] = get_T_sp(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
                 end
             end
             
@@ -445,7 +445,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp = NaN;
                     obj.store_r_sp = NaN;
                 else
-                    [obj.store_T_sp, obj.store_r_sp] = get_T_sp(obj.Th_inf, obj.V, 1);
+                    [obj.store_T_sp, obj.store_r_sp] = get_T_sp(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
                 end
             end
             
@@ -458,7 +458,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp_r = NaN;
                     obj.store_r_sp_r = NaN;
                 else
-                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_sp(obj.Th_inf, obj.V, -1);
+                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_sp(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
                 end
             end
             
@@ -471,7 +471,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp_r = NaN;
                     obj.store_r_sp_r = NaN;
                 else
-                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_sp(obj.Th_inf, obj.V, -1);
+                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_sp(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
                 end
             end
             
@@ -484,7 +484,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin = NaN;
                     obj.store_r_bin = NaN;
                 else
-                    [obj.store_T_bin, obj.store_r_bin] = get_T_bin(obj.Th_inf, obj.V, 1);
+                    [obj.store_T_bin, obj.store_r_bin] = get_T_bin(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
                 end
             end
 
@@ -497,7 +497,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin = NaN;
                     obj.store_r_bin = NaN;
                 else
-                    [obj.store_T_bin, obj.store_r_bin] = get_T_bin(obj.Th_inf, obj.V, 1);
+                    [obj.store_T_bin, obj.store_r_bin] = get_T_bin(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
                 end
             end
 
@@ -510,7 +510,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin_r = NaN;
                     obj.store_r_bin_r = NaN;
                 else
-                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_bin(obj.Th_inf, obj.V, -1);
+                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_bin(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
                 end
             end
             
@@ -523,7 +523,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin_r = NaN;
                     obj.store_r_bin_r = NaN;
                 else
-                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_bin(obj.Th_inf, obj.V, -1);
+                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_bin(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
                 end
             end
             
