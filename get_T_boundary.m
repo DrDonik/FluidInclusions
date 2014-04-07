@@ -2,15 +2,17 @@
 %specific volumes and densities
 %
 % [T_boundary, r_boundary] = 
-%     get_T_boundary(Th_inf, V, T_boundary_to_calc, pressureMinimum)
+%     get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
 %
 % calculates the boundary temperature of an inclusion of a given size and a
 % given nominal homogenisation temperature.
 %   Th_inf is the nominal homogenization temperature (in Kelvin)
 %   V is the volume (in micrometers^3) for which the boundary temperatures 
 %     should be calculated
-%   T_boundary_to_calc is whether the user wants prograde (1) or retrograde (-1) 
-%     temperatures
+%   calc_sp_boundary is whether you want the spinodal (1) or the binodal (0) 
+%     temperature
+%   calc_prograde_boundary is whether you want the prograde (1) or retrograde (0) 
+%     temperature
 %   pressureMinimum is the temperature of minimum pressure in the inclusion
 %   (and is used as is the initial guess for T_boundary)
 % All arguments are mandatory.
@@ -20,7 +22,7 @@
 %
 
 function [T_boundary, r_boundary] = ...
-    get_T_boundary(Th_inf, V, T_boundary_to_calc, pressureMinimum)
+    get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
 
 % Load some data from IAPWS-95
 coeffs = readIAPWS95data();
@@ -48,7 +50,7 @@ V = V*1e-18;
 
 rhoOverallInitial = liqvap_density(Th_inf)*1000;
 
-dir = T_boundary_to_calc;
+if calc_prograde_boundary; dir = 1; else dir = -1; end;
 T_boundary_working = pressureMinimum;
 
 step = 1.25;
@@ -85,7 +87,7 @@ while step >= tolerance
                 keyboard
             end
         else
-            while sign(T_boundary_working + dir*step - Th_inf) == sign(T_boundary_to_calc);
+            while sign(T_boundary_working + dir*step - Th_inf) == sign(calc_prograde_boundary);
                 % Make sure we don't cross Th_inf, since we know we
                 % will not find a bubble beyond that temperature.
                 step = step/5;
@@ -124,6 +126,9 @@ while step >= tolerance
             
             if ~isreal(gm_out_corrected) || gm_out_corrected <= 1e-9
                 % There was no bubble possible at this temperature and this volume.
+                gm_out_corrected = NaN;
+            elseif ~calc_sp_boundary && helmholtz_function(minvars_corrected) > helmholtz_function([0, minvars_corrected(2)])
+                % The minimum was found, but it is already in the metastable region
                 gm_out_corrected = NaN;
             end;
         else
