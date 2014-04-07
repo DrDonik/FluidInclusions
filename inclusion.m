@@ -433,7 +433,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp = NaN;
                     obj.store_r_sp = NaN;
                 else
-                    [obj.store_T_sp, obj.store_r_sp] = get_T_sp(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
+                    [obj.store_T_sp, obj.store_r_sp] = get_T_boundary(obj.Th_inf, obj.V, 1, 1, obj.pressureMinimum);
                 end
             end
             
@@ -446,7 +446,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp = NaN;
                     obj.store_r_sp = NaN;
                 else
-                    [obj.store_T_sp, obj.store_r_sp] = get_T_sp(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
+                    [obj.store_T_sp, obj.store_r_sp] = get_T_boundary(obj.Th_inf, obj.V, 1, 1, obj.pressureMinimum);
                 end
             end
             
@@ -459,7 +459,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp_r = NaN;
                     obj.store_r_sp_r = NaN;
                 else
-                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_sp(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
+                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_boundary(obj.Th_inf, obj.V, 1, 0, obj.pressureMinimum);
                 end
             end
             
@@ -472,7 +472,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp_r = NaN;
                     obj.store_r_sp_r = NaN;
                 else
-                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_sp(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
+                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_boundary(obj.Th_inf, obj.V, 1, 0, obj.pressureMinimum);
                 end
             end
             
@@ -485,7 +485,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin = NaN;
                     obj.store_r_bin = NaN;
                 else
-                    [obj.store_T_bin, obj.store_r_bin] = get_T_bin(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
+                    [obj.store_T_bin, obj.store_r_bin] = get_T_boundary(obj.Th_inf, obj.V, 0, 1, obj.pressureMinimum);
                 end
             end
 
@@ -498,7 +498,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin = NaN;
                     obj.store_r_bin = NaN;
                 else
-                    [obj.store_T_bin, obj.store_r_bin] = get_T_bin(obj.Th_inf, obj.V, 1, obj.pressureMinimum);
+                    [obj.store_T_bin, obj.store_r_bin] = get_T_boundary(obj.Th_inf, obj.V, 0, 1, obj.pressureMinimum);
                 end
             end
 
@@ -511,7 +511,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin_r = NaN;
                     obj.store_r_bin_r = NaN;
                 else
-                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_bin(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
+                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_boundary(obj.Th_inf, obj.V, 0, 0, obj.pressureMinimum);
                 end
             end
             
@@ -524,7 +524,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin_r = NaN;
                     obj.store_r_bin_r = NaN;
                 else
-                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_bin(obj.Th_inf, obj.V, -1, obj.pressureMinimum);
+                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_boundary(obj.Th_inf, obj.V, 0, 0, obj.pressureMinimum);
                 end
             end
             
@@ -637,13 +637,12 @@ classdef inclusion < hgsetget
 		rho = liqvap_density_vapor(T)
 		[reftemp, alpha_V] = expansion_coeff(T)
 		[Th_inf, r] = flower_boundary(V, Th_obs_is_T_bin)
-		[T_sp, r_sp] = get_T_sp(Th_inf, V, T_sp_to_calc, pressureMinimum)
-		[T_bin, r_bin] = get_T_bin(Th_inf, V, T_bin_to_calc)
+		[T_boundary, r_boundary] = get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
 		[r, steamDensity_corrected] = get_r(T, Th_inf, V)
-		[P_vapour,P_liquid] = jaropressure(T, r)
+		[P_vapour, P_liquid] = jaropressure(T, r)
 		[ f, g, h ] = isochoricobjective(gm, dg, tau, A, stprime, coeffs, dm)
 		[mineralNumber, pressureMinimum] = set_fi_mineral(mineralNumber)
-		[mineralNumber, pressureMinimum]  = get_fi_mineral()
+		[mineralNumber, pressureMinimum] = get_fi_mineral()
 		tolerance = set_tolerance(tolerance)
 		tolerance = get_tolerance()
 
