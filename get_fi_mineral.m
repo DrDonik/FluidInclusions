@@ -6,7 +6,7 @@ function [mineralNumber, pressureMinimum]  = get_fi_mineral()
     
     if isempty(MineralNumber)
         
-        [mineralNumber, pressureMinimum] = set_fi_mineral();
+        [mineralNumber, pressureMinimum] = inclusion.set_fi_mineral();
         
     else
     

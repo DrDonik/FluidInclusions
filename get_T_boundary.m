@@ -25,9 +25,9 @@ function [T_boundary, r_boundary] = ...
     get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
 
 % Load some data from IAPWS-95
-coeffs = readIAPWS95data();
+coeffs = inclusion.readIAPWS95data();
 
-tolerance = get_tolerance;
+tolerance = inclusion.get_tolerance;
 
 % The fit options. Usually the fit converges after less than 10 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
@@ -39,8 +39,8 @@ options = optimset('TolX',TolX,'TolFun',TolFun,'GradObj','on',...
     'Display','off','MaxIter',10);
 
 % Some constants
-rhoc = coeffs.rhoc;
-Tc = coeffs.Tc;
+rhoc = 322;
+Tc = 647.0960;
 rc = 1.1808741e-8;
 b = -0.625;
 mu = 1.256;
@@ -48,7 +48,7 @@ mu = 1.256;
 % V was entered in um^3, so change it to SI.
 V = V*1e-18;
 
-rhoOverallInitial = liqvap_density(Th_inf)*1000;
+rhoOverallInitial = inclusion.liqvap_density(Th_inf)*1000;
 
 if calc_prograde_boundary; dir = 1; else dir = -1; end;
 T_boundary_working = pressureMinimum;
@@ -96,7 +96,7 @@ while step >= tolerance
         end;
         
         % Apply the volume correction
-        [reftemp, alpha_V] = expansion_coeff(T_boundary_working);
+        [reftemp, alpha_V] = inclusion.expansion_coeff(T_boundary_working);
         rho_overall_at_T = rhoOverallInitial*((1-(reftemp-Th_inf+273.15)*alpha_V)/(1-(reftemp-T_boundary_working+273.15)*alpha_V));
         dm = rho_overall_at_T/rhoc;
         
@@ -111,13 +111,13 @@ while step >= tolerance
         A = 0;
         
         % This will be the funtion to minimise
-        helmholtz_function = @(minvars) isochoricobjective(minvars(1), minvars(2), tau, A, stprime, coeffs, dm);
+        helmholtz_function = @(minvars) inclusion.isochoricobjective(minvars(1), minvars(2), tau, A, stprime, coeffs, dm);
         
         % Make an initial estimate using IAPWS-95, pretending there was no
         % surface tension. These values will be larger, but close to the
         % final values.
-        minvars_corrected(1) = (1 - rho_overall_at_T/1000/liqvap_density(T_boundary_working));
-        minvars_corrected(2) = liqvap_density_vapor(T_boundary_working)/rhoc*1000;
+        minvars_corrected(1) = (1 - rho_overall_at_T/1000/inclusion.liqvap_density(T_boundary_working));
+        minvars_corrected(2) = inclusion.liqvap_density_vapour(T_boundary_working)/rhoc*1000;
         
         if minvars_corrected(1) > 0
             % Minimise the helmholtz energy

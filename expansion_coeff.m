@@ -4,7 +4,7 @@ function [reftemp, alpha_V] = expansion_coeff(T)
 %go to °C
 T = T - 273.15;
 
-mineralNumber = get_fi_mineral();
+mineralNumber = inclusion.get_fi_mineral();
 
 if mineralNumber == 1;
     %disp('Calcite, reference T = 30°, Rao')

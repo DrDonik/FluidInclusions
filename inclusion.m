@@ -413,7 +413,7 @@ classdef inclusion < hgsetget
         
         function value = get.r_pressureMinimum(obj)
             if isempty(obj.store_r_pressureMinimum)
-                obj.store_r_pressureMinimum = get_r(obj.pressureMinimum, obj.Th_inf, obj.V);
+                obj.store_r_pressureMinimum = inclusion.get_r(obj.pressureMinimum, obj.Th_inf, obj.V);
             end
             
             value = obj.store_r_pressureMinimum;
@@ -421,7 +421,7 @@ classdef inclusion < hgsetget
         
         function value = get.flower_boundary(obj)
             if isempty(obj.store_flower_boundary)
-                obj.store_flower_boundary = flower_boundary(obj.V, 0);
+                obj.store_flower_boundary = inclusion.calculateFlowerBoundary(obj.V, 0);
             end
             
             value = obj.store_flower_boundary;
@@ -433,7 +433,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp = NaN;
                     obj.store_r_sp = NaN;
                 else
-                    [obj.store_T_sp, obj.store_r_sp] = get_T_boundary(obj.Th_inf, obj.V, 1, 1, obj.pressureMinimum);
+                    [obj.store_T_sp, obj.store_r_sp] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 1, 1, obj.pressureMinimum);
                 end
             end
             
@@ -446,7 +446,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp = NaN;
                     obj.store_r_sp = NaN;
                 else
-                    [obj.store_T_sp, obj.store_r_sp] = get_T_boundary(obj.Th_inf, obj.V, 1, 1, obj.pressureMinimum);
+                    [obj.store_T_sp, obj.store_r_sp] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 1, 1, obj.pressureMinimum);
                 end
             end
             
@@ -459,7 +459,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp_r = NaN;
                     obj.store_r_sp_r = NaN;
                 else
-                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_boundary(obj.Th_inf, obj.V, 1, 0, obj.pressureMinimum);
+                    [obj.store_T_sp_r, obj.store_r_sp_r] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 1, 0, obj.pressureMinimum);
                 end
             end
             
@@ -472,7 +472,7 @@ classdef inclusion < hgsetget
                     obj.store_T_sp_r = NaN;
                     obj.store_r_sp_r = NaN;
                 else
-                    [obj.store_T_sp_r, obj.store_r_sp_r] = get_T_boundary(obj.Th_inf, obj.V, 1, 0, obj.pressureMinimum);
+                    [obj.store_T_sp_r, obj.store_r_sp_r] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 1, 0, obj.pressureMinimum);
                 end
             end
             
@@ -485,7 +485,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin = NaN;
                     obj.store_r_bin = NaN;
                 else
-                    [obj.store_T_bin, obj.store_r_bin] = get_T_boundary(obj.Th_inf, obj.V, 0, 1, obj.pressureMinimum);
+                    [obj.store_T_bin, obj.store_r_bin] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 0, 1, obj.pressureMinimum);
                 end
             end
 
@@ -498,7 +498,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin = NaN;
                     obj.store_r_bin = NaN;
                 else
-                    [obj.store_T_bin, obj.store_r_bin] = get_T_boundary(obj.Th_inf, obj.V, 0, 1, obj.pressureMinimum);
+                    [obj.store_T_bin, obj.store_r_bin] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 0, 1, obj.pressureMinimum);
                 end
             end
 
@@ -511,7 +511,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin_r = NaN;
                     obj.store_r_bin_r = NaN;
                 else
-                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_boundary(obj.Th_inf, obj.V, 0, 0, obj.pressureMinimum);
+                    [obj.store_T_bin_r, obj.store_r_bin_r] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 0, 0, obj.pressureMinimum);
                 end
             end
             
@@ -524,7 +524,7 @@ classdef inclusion < hgsetget
                     obj.store_T_bin_r = NaN;
                     obj.store_r_bin_r = NaN;
                 else
-                    [obj.store_T_bin_r, obj.store_r_bin_r] = get_T_boundary(obj.Th_inf, obj.V, 0, 0, obj.pressureMinimum);
+                    [obj.store_T_bin_r, obj.store_r_bin_r] = inclusion.get_T_boundary(obj.Th_inf, obj.V, 0, 0, obj.pressureMinimum);
                 end
             end
             
@@ -594,7 +594,7 @@ classdef inclusion < hgsetget
 
         function value = get.r(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_r) || ~all(obj.store_r))
-                obj.store_r(obj.store_r == 0) = get_r(obj.store_T(obj.store_r == 0), obj.Th_inf, obj.V);
+                obj.store_r(obj.store_r == 0) = inclusion.get_r(obj.store_T(obj.store_r == 0), obj.Th_inf, obj.V);
             end
             
             value = obj.store_r;
@@ -602,7 +602,7 @@ classdef inclusion < hgsetget
                
         function value = get.rho_overall_at_T(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_rho_overall_at_T) || ~all(obj.store_rho_overall_at_T))
-                [reftemp, alpha_V] = expansion_coeff(obj.store_T(obj.store_rho_overall_at_T == 0));
+                [reftemp, alpha_V] = inclusion.expansion_coeff(obj.store_T(obj.store_rho_overall_at_T == 0));
 
                 obj.store_rho_overall_at_T(obj.store_rho_overall_at_T == 0) = ...
                    obj.rho_overall * ((1-(reftemp-obj.Th_inf+273.15)*alpha_V) ./ ...
@@ -615,7 +615,7 @@ classdef inclusion < hgsetget
         function value = get.p_l(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_l) || ~all(obj.store_p_l))
                 [obj.store_p_v(obj.store_p_v==0), obj.store_p_l(obj.store_p_l==0)] = ...
-                    jaropressure(obj.T(obj.store_p_l==0), obj.r(obj.store_p_l==0));
+                    inclusion.jaropressure(obj.T(obj.store_p_l==0), obj.r(obj.store_p_l==0));
             end
             
             value = obj.store_p_l;
@@ -624,28 +624,31 @@ classdef inclusion < hgsetget
         function value = get.p_v(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_v) || ~all(obj.store_p_v))
                  [obj.store_p_v(obj.store_p_v==0), obj.store_p_l(obj.store_p_l==0)] = ...
-                    jaropressure(obj.T(obj.store_p_v==0), obj.r(obj.store_p_v==0));
+                    inclusion.jaropressure(obj.T(obj.store_p_v==0), obj.r(obj.store_p_v==0));
            end
             
             value = obj.store_p_v;
         end
 		
-		%% Methods saved in files in the @inclusion folder
-		
-		coeffs = readIAPWS95data()
-		rho = liqvap_density(T)
-		rho = liqvap_density_vapour(T)
-		[reftemp, alpha_V] = expansion_coeff(T)
-		[Th_inf, r] = flower_boundary(V, Th_obs_is_T_bin)
-		[T_boundary, r_boundary] = get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
-		[r, steamDensity_corrected] = get_r(T, Th_inf, V)
-		[P_vapour, P_liquid] = jaropressure(T, r)
-		[ f, g, h ] = isochoricobjective(gm, dg, tau, A, stprime, coeffs, dm)
+    end
+    
+    methods (Static)
+        %% Methods saved in files in the @inclusion folder
+
+        coeffs = readIAPWS95data()
 		[mineralNumber, pressureMinimum] = set_fi_mineral(mineralNumber)
 		[mineralNumber, pressureMinimum] = get_fi_mineral()
 		tolerance = set_tolerance(tolerance)
 		tolerance = get_tolerance()
-
+		rho = liqvap_density(T)
+		rho = liqvap_density_vapour(T)
+		[reftemp, alpha_V] = expansion_coeff(T)
+		[Th_inf, r] = calculateFlowerBoundary(V, Th_obs_is_T_bin)
+		[T_boundary, r_boundary] = get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
+		[r, steamDensity_corrected] = get_r(T, Th_inf, V)
+		[P_vapour, P_liquid] = jaropressure(T, r)
+		[ f, g, h ] = isochoricobjective(gm, dg, tau, A, stprime, coeffs, dm)
+        
     end
         
 end

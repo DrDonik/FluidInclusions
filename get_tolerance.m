@@ -19,7 +19,7 @@ function tolerance = get_tolerance()
         end;
 
         if ~exist([PATH, '/', USER, '_tolerance.mat'],'file')
-            tolerance = set_tolerance();
+            tolerance = inclusion.set_tolerance();
         else
             load([PATH, '/', USER, '_tolerance.mat']);
         end;
