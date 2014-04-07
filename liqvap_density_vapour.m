@@ -1,4 +1,4 @@
-function rho = liqvap_density_vapor(T)
+function rho = liqvap_density_vapour(T)
 
 %Calculate the density on the liquid-vapor equilibrium curve (saturated vapor)
 %Refer to equation (2.7) of Wagner and Pruss, J. Phys. Chem. Ref. Data, 31, p 387 (2002)

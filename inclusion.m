@@ -634,7 +634,7 @@ classdef inclusion < hgsetget
 		
 		coeffs = readIAPWS95data()
 		rho = liqvap_density(T)
-		rho = liqvap_density_vapor(T)
+		rho = liqvap_density_vapour(T)
 		[reftemp, alpha_V] = expansion_coeff(T)
 		[Th_inf, r] = flower_boundary(V, Th_obs_is_T_bin)
 		[T_boundary, r_boundary] = get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
