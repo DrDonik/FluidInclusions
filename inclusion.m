@@ -1,90 +1,91 @@
+%obj = inclusion(Th_inf, V, mineral_number)
+%   The inclusion class is used to calculate, store and query all kinds
+%   of information about inclusions. A new inclusion is constructed
+%   using obj = inclusion(Th_inf, V, mineral_number), the last being an 
+%   optional input (but asked during construction if omitted). Th_inf 
+%   has to be given in Kelvin, V in um^3.
+%   The new object will contain nothing but the information provided by
+%   the user at first, but can then be filled with information.
+%
+%   Properties:
+%
+%   Th_inf
+%       The nominal homogenization temperatures of the inclusion, in
+%       Kelvin. This property is set during construction from user
+%       input.
+%   V
+%       The volumes of the inclusion, in um^3. This property is set
+%       during construction from user input.
+%   mineralNumber
+%       The mineral number of the inclusion, i.e. the host type. This
+%       property is set during construction from user input or query.
+%   pressureMinimum
+%       The temperature at which the internal pressure of the inclusion
+%       is minimal, in Kelvin.
+%   r_pressureMinimum
+%       The radius of the vapour bubble at the pressure minimum, in um.
+%   rho_overall
+%       The mean density of the inclusion at Th_inf, in kg/m^3
+%   T
+%       The "current" temperature(s) of the inclusion, in Kelvin. This
+%       property is set using inclusion.T = values.
+%       Whenever you assign this property a new value, the bubble radii
+%       are reset and have to be recalculated anew upon the next query.
+%   r
+%       The bubble radii at temperature T, in um.
+%       This property is calculated as soon as it is queried.
+%   p_l, p_v
+%       The pressures of the liquid and vapour phase, respectively, at
+%       the temperature(s) T, in Pascal.
+%       This property is calculated as soon as it is queried.
+%   rho_overall_at_T
+%       The mean density of the inclusion at the temperature(s) T
+%   T_sp, T_sp_r
+%       The pro- and retrograde temperatures, respectively, at which 
+%       the vapour bubble becomes unstable, in Kelvin.
+%       This property is calculated as soon as it is queried.
+%   r_sp, r_sp_r
+%       The radiii of the vapour bubble at T_sp and T_sp_r, in um.
+%       This property is calculated as soon as it is queried.
+%   T_bin, T_bin_r
+%       The pro- and retrograde temperatures, respectively, at which 
+%       the vapour bubble becomes metastable, in Kelvin.
+%       This property is calculated as soon as it is queried.
+%   r_bin, r_bin_r
+%       The radiii of the vapour bubble at T_bin and T_bin_r, in um.
+%       This property is calculated as soon as it is queried.
+%
+%   Methods:
+%
+%   reset(obj)
+%       This will clear all the calculated and hence stored values of
+%       the limit temperatures and radii. Those will have to be
+%       recalculated upon the next query. Useful if you changed
+%       something in the underlying programs.
+%   [inclusion, index, R] = find(inclusion_array, Th_inf, V)
+%       This will search through an object array (consisting of objects
+%       of the inclusion class) and return the entry that most closely
+%       matches the Th_inf and V combination.
+%   [inclusion, index, R] = errorTolerance(inclusion_array, Th_inf, Th_obs)
+%       This will search through an object array (consisting of objects
+%       of the inclusion class) and return the entry that most closely
+%       matches the Th_inf and Th_obs combination.
+%   [inclusion, index, R] = match(inclusion_array, Th_obs, r_pressureMinimum, Th_obs_is_T_bin, T_obs)
+%       This will search through an object array (consisting of objects
+%       of the inclusion class) and return the entry that most closely
+%       matches the Th_obs and r_pressureMinimum combination. If T_obs
+%       is given, it will match r instead of r_pressureMinimum.
+%   [Th_inf, V] = dimensions(obj_array)
+%       This will return the span of Th_inf and V of an array of
+%       objects.
+%   obj_array = insert_Th_inf(obj_array, Th_inf), obj_array = insert_V(obj_array, V), 
+%       The array of objects will be expanded so that it will contain
+%       every possible combination of existing and inserted Th_inf and
+%       V. That is, when adding a new, single Th_inf, the resulting 
+%       object will contain a new full row with every combination of
+%       that Th_inf with all preexisting V.
+
 classdef inclusion < hgsetget
-    %obj = inclusion(Th_inf, V, mineral_number)
-    %   The inclusion class is used to calculate, store and query all kinds
-    %   of information about inclusions. A new inclusion is constructed
-    %   using obj = inclusion(Th_inf, V, mineral_number), the last being an 
-    %   optional input (but asked during construction if omitted). Th_inf 
-    %   has to be given in Kelvin, V in um^3.
-    %   The new object will contain nothing but the information provided by
-    %   the user at first, but can then be filled with information.
-    %
-    %   Properties:
-    %
-    %   Th_inf
-    %       The nominal homogenization temperatures of the inclusion, in
-    %       Kelvin. This property is set during construction from user
-    %       input.
-    %   V
-    %       The volumes of the inclusion, in um^3. This property is set
-    %       during construction from user input.
-    %   mineralNumber
-    %       The mineral number of the inclusion, i.e. the host type. This
-    %       property is set during construction from user input or query.
-    %   pressureMinimum
-    %       The temperature at which the internal pressure of the inclusion
-    %       is minimal, in Kelvin.
-    %   r_pressureMinimum
-    %       The radius of the vapour bubble at the pressure minimum, in um.
-    %   rho_overall
-    %       The mean density of the inclusion at Th_inf, in kg/m^3
-    %   T
-    %       The "current" temperature(s) of the inclusion, in Kelvin. This
-    %       property is set using inclusion.T = values.
-    %       Whenever you assign this property a new value, the bubble radii
-    %       are reset and have to be recalculated anew upon the next query.
-    %   r
-    %       The bubble radii at temperature T, in um.
-    %       This property is calculated as soon as it is queried.
-    %   p_l, p_v
-    %       The pressures of the liquid and vapour phase, respectively, at
-    %       the temperature(s) T, in Pascal.
-    %       This property is calculated as soon as it is queried.
-    %   rho_overall_at_T
-    %       The mean density of the inclusion at the temperature(s) T
-    %   T_sp, T_sp_r
-    %       The pro- and retrograde temperatures, respectively, at which 
-    %       the vapour bubble becomes unstable, in Kelvin.
-    %       This property is calculated as soon as it is queried.
-    %   r_sp, r_sp_r
-    %       The radiii of the vapour bubble at T_sp and T_sp_r, in um.
-    %       This property is calculated as soon as it is queried.
-    %   T_bin, T_bin_r
-    %       The pro- and retrograde temperatures, respectively, at which 
-    %       the vapour bubble becomes metastable, in Kelvin.
-    %       This property is calculated as soon as it is queried.
-    %   r_bin, r_bin_r
-    %       The radiii of the vapour bubble at T_bin and T_bin_r, in um.
-    %       This property is calculated as soon as it is queried.
-    %
-    %   Methods:
-    %
-    %   reset(obj)
-    %       This will clear all the calculated and hence stored values of
-    %       the limit temperatures and radii. Those will have to be
-    %       recalculated upon the next query. Useful if you changed
-    %       something in the underlying programs.
-    %   [inclusion, index, R] = find(inclusion_array, Th_inf, V)
-    %       This will search through an object array (consisting of objects
-    %       of the inclusion class) and return the entry that most closely
-    %       matches the Th_inf and V combination.
-    %   [inclusion, index, R] = errorTolerance(inclusion_array, Th_inf, Th_obs)
-    %       This will search through an object array (consisting of objects
-    %       of the inclusion class) and return the entry that most closely
-    %       matches the Th_inf and Th_obs combination.
-    %   [inclusion, index, R] = match(inclusion_array, Th_obs, r_pressureMinimum, Th_obs_is_T_bin, T_obs)
-    %       This will search through an object array (consisting of objects
-    %       of the inclusion class) and return the entry that most closely
-    %       matches the Th_obs and r_pressureMinimum combination. If T_obs
-    %       is given, it will match r instead of r_pressureMinimum.
-    %   [Th_inf, V] = dimensions(obj_array)
-    %       This will return the span of Th_inf and V of an array of
-    %       objects.
-    %   obj_array = insert_Th_inf(obj_array, Th_inf), obj_array = insert_V(obj_array, V), 
-    %       The array of objects will be expanded so that it will contain
-    %       every possible combination of existing and inserted Th_inf and
-    %       V. That is, when adding a new, single Th_inf, the resulting 
-    %       object will contain a new full row with every combination of
-    %       that Th_inf with all preexisting V.
     
     %% Properties
     
@@ -195,7 +196,7 @@ classdef inclusion < hgsetget
         %% Special functions
         
         function reset(obj)
-            % This is used the clear all the calculated limittemperatures 
+            % This is used the clear all the calculated limit temperatures 
             % and radii. The values will then have to be calculated anew.
             % To reset T and the associated radii, assign T an empty array.
             obj.store_T_sp = [];
@@ -628,6 +629,23 @@ classdef inclusion < hgsetget
             
             value = obj.store_p_v;
         end
+		
+		%% Methods saved in files in the @inclusion folder
+		
+		coeffs = readIAPWS95data()
+		rho = liqvap_density(T)
+		rho = liqvap_density_vapor(T)
+		[reftemp, alpha_V] = expansion_coeff(T)
+		[Th_inf, r] = flower_boundary(V, Th_obs_is_T_bin)
+		[T_sp, r_sp] = get_T_sp(Th_inf, V, T_sp_to_calc, pressureMinimum)
+		[T_bin, r_bin] = get_T_bin(Th_inf, V, T_bin_to_calc)
+		[r, steamDensity_corrected] = get_r(T, Th_inf, V)
+		[P_vapour,P_liquid] = jaropressure(T, r)
+		[ f, g, h ] = isochoricobjective(gm, dg, tau, A, stprime, coeffs, dm)
+		[mineralNumber, pressureMinimum] = set_fi_mineral(mineralNumber)
+		[mineralNumber, pressureMinimum]  = get_fi_mineral()
+		tolerance = set_tolerance(tolerance)
+		tolerance = get_tolerance()
 
     end
         

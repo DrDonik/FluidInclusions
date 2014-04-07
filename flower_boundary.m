@@ -1,7 +1,7 @@
 % Th_obs_is_T_bin has to be set either to true (or 1, the default) for bin or to false
 % (or 0) for sp.
 
-function [Th_inf, bubble_radius_out] = flower_boundary(V, Th_obs_is_T_bin)
+function [Th_inf, r] = flower_boundary(V, Th_obs_is_T_bin)
 
 % Check for the host mineral. If you want to change it, run set_fi_mineral
 [~, pressureMinimum] = get_fi_mineral();
@@ -94,6 +94,6 @@ for ctr = 1:length(V)
     
 end
 
-bubble_radius_out = (3 * V * gm_out_corrected / (4 * pi))^(1/3)*1e6;
+r = (3 * V * gm_out_corrected / (4 * pi))^(1/3)*1e6;
 
 return
