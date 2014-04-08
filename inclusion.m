@@ -636,6 +636,7 @@ classdef inclusion < hgsetget
         [r, steamDensity_corrected] = get_r(obj, T)
 		[Th_inf, r] = calculateFlowerBoundary(obj, Th_obs_is_T_bin)
 		[T_boundary, r_boundary] = get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
+		[P_vapour, P_liquid] = partPressure(obj)
 
     end
     
@@ -649,7 +650,6 @@ classdef inclusion < hgsetget
 		tolerance = get_tolerance()
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
-		[P_vapour, P_liquid] = partPressure(T, r)
         
     end
         
