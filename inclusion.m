@@ -114,11 +114,11 @@ classdef inclusion < hgsetget
         r_bin           % The radius of the vapour bubble at T_bin, in um
         T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in K
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
+
+        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
     end
     
     properties (Dependent, SetAccess = private, Hidden)
-        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
-
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
         
