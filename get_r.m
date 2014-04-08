@@ -10,7 +10,7 @@ function [r, steamDensity_corrected] = ...
     get_r(T, Th_inf, V)
 
 % Load some data from IAPWS-95
-coeffs = readIAPWS95data();
+coeffs = inclusion.readIAPWS95data();
 
 % V was entered in um^3, so change it to SI.
 V = V*1e-18;
@@ -26,10 +26,10 @@ mu = 1.256;
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
 % routine to take the Jacobian into account.
 options = optimset('TolX',1e-12,'TolFun',1e-15,'GradObj','on','Hessian','user-supplied','Algorithm','trust-region-reflective','Display','off','MaxIter',50);
-rhoOverallInitial = liqvap_density(Th_inf)*1000;
+rhoOverallInitial = inclusion.liqvap_density(Th_inf)*1000;
 
 % Apply the volume correction
-[reftemp, alpha_V] = expansion_coeff(T);
+[reftemp, alpha_V] = inclusion.expansion_coeff(T);
 rho_correction = ((1-(reftemp-Th_inf+273.15)*alpha_V)/(1-(reftemp-T+273.15)*alpha_V));
 rho_overall_at_T = rhoOverallInitial*rho_correction;
 dm = rho_overall_at_T/rhoc;
@@ -37,8 +37,8 @@ dm = rho_overall_at_T/rhoc;
 % Make an initial estimate using IAPWS-95, pretending there was no
 % surface tension. These values will be larger, but close to the
 % final values.
-minvars_corrected(1) = (1 - rho_overall_at_T/liqvap_density(T)/1000);
-minvars_corrected(2) = liqvap_density_vapor(T)/rhoc*1000;
+minvars_corrected(1) = (1 - rho_overall_at_T/inclusion.liqvap_density(T)/1000);
+minvars_corrected(2) = inclusion.liqvap_density_vapour(T)/rhoc*1000;
 
 % Calculate the surface tension
 tau = Tc/T;

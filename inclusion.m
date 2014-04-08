@@ -166,9 +166,9 @@ classdef inclusion < hgsetget
             end
             
             if isempty(mineralNumber)
-                [obj.mineralNumber, obj.pressureMinimum] = set_fi_mineral();
+                [obj.mineralNumber, obj.pressureMinimum] = inclusion.set_fi_mineral();
             else
-                [obj.mineralNumber, obj.pressureMinimum] = set_fi_mineral(mineralNumber);
+                [obj.mineralNumber, obj.pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
             end
             
             if length(V) > 1 || length(Th_inf) > 1 || length(mineralNumber) > 1
@@ -189,7 +189,7 @@ classdef inclusion < hgsetget
             obj.Th_inf = Th_inf;
             obj.V = V;
             
-            obj.rho_overall = liqvap_density(Th_inf)*1000;
+            obj.rho_overall = inclusion.liqvap_density(Th_inf)*1000;
             
         end
         
