@@ -30,10 +30,11 @@ progress_counter = 0;
 inclusionObject = inclusion(Th_inf, V, mineralNumber);
 
 if Th_obs_is_T_bin
-	[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
+	Th_obs_calculated = inclusionObject.T_bin;
 else
-	[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
+	Th_obs_calculated = inclusionObject.T_sp;
 end;
+radius_out_corrected = inclusionObject.r_pressureMinimum;
 
 Th_inf_step = -1;
 V_step = -V/1e3;
@@ -67,13 +68,15 @@ while abs(Th_obs_calculated - Th_obs) > tolerance || ...
         Th_obs_calculated = NaN;
         radius_out_corrected = NaN;
         while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+            
 			inclusionObject = inclusion(Th_inf, V, mineralNumber);
-			
-			if Th_obs_is_T_bin
-				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
-			else
-				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
-			end;
+            if Th_obs_is_T_bin
+                Th_obs_calculated = inclusionObject.T_bin;
+            else
+                Th_obs_calculated = inclusionObject.T_sp;
+            end;
+            radius_out_corrected = inclusionObject.r_pressureMinimum;
+            
 			if isnan(Th_obs_calculated)
                 if sign(Th_inf_step) == 1;
                     % we probably crossed the flower boundary
@@ -97,6 +100,7 @@ while abs(Th_obs_calculated - Th_obs) > tolerance || ...
                     %break;
                 end;
             end;
+            
         end;
 
         % Calculate the derivative
@@ -119,13 +123,15 @@ while abs(Th_obs_calculated - Th_obs) > tolerance || ...
         Th_obs_calculated = NaN;
         radius_out_corrected = NaN;
         while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+            
 			inclusionObject = inclusion(Th_inf, V, mineralNumber);
-			
-			if Th_obs_is_T_bin
-				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
-			else
-				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
-			end;
+            if Th_obs_is_T_bin
+                Th_obs_calculated = inclusionObject.T_bin;
+            else
+                Th_obs_calculated = inclusionObject.T_sp;
+            end;
+            radius_out_corrected = inclusionObject.r_pressureMinimum;
+            
 			if isnan(Th_obs_calculated);
                 if sign(V_step) == 1;
                     % we probably crossed the flower boundary
@@ -149,6 +155,7 @@ while abs(Th_obs_calculated - Th_obs) > tolerance || ...
                     %break;
                 end;
             end;
+            
         end;
                 
         % Calculate the derivative
@@ -162,12 +169,12 @@ while abs(Th_obs_calculated - Th_obs) > tolerance || ...
         Th_inf = Th_inf - Th_inf_step;
 
 		inclusionObject = inclusion(Th_inf, V, mineralNumber);
-		
-		if Th_obs_is_T_bin
-			[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
-		else
-			[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
-		end;
+        if Th_obs_is_T_bin
+            Th_obs_calculated = inclusionObject.T_bin;
+        else
+            Th_obs_calculated = inclusionObject.T_sp;
+        end;
+        radius_out_corrected = inclusionObject.r_pressureMinimum;
         
         % If one of the two is NaN here, we have to redo the whole thing,
         % since the combination of the two new values doesn't work.

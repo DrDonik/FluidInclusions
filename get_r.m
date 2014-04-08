@@ -6,8 +6,7 @@
 
 % I expect T to be in K
 
-function [r, steamDensity_corrected] = ...
-    get_r(obj, T)
+function obj = get_r(obj)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
@@ -23,59 +22,53 @@ mu = 1.256;
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
 % routine to take the Jacobian into account.
 options = optimset('TolX',1e-12,'TolFun',1e-15,'GradObj','on','Hessian','user-supplied','Algorithm','trust-region-reflective','Display','off','MaxIter',50);
-rhoOverallInitial = inclusion.liqvap_density(obj.Th_inf)*1000;
 
-% Apply the volume correction
-[reftemp, alpha_V] = expansion_coeff(obj, T);
-rho_correction = ((1-(reftemp-obj.Th_inf+273.15)*alpha_V)/(1-(reftemp-T+273.15)*alpha_V));
-rho_overall_at_T = rhoOverallInitial*rho_correction;
-dm = rho_overall_at_T/rhoc;
+for T_ctr = find(obj.store_r == 0)
 
-% Make an initial estimate using IAPWS-95, pretending there was no
-% surface tension. These values will be larger, but close to the
-% final values.
-minvars_corrected(1) = (1 - rho_overall_at_T/inclusion.liqvap_density(T)/1000);
-minvars_corrected(2) = inclusion.liqvap_density_vapour(T)/rhoc*1000;
+    % Apply the volume correction
+    dm = obj.rho_overall_at_T(T_ctr)/rhoc;
 
-% Calculate the surface tension
-tau = Tc/T;
-stprime = rc/(obj.V/1e18)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+    % Make an initial estimate using IAPWS-95, pretending there was no
+    % surface tension. These values will be larger, but close to the
+    % final values.
+    minvars_corrected(1) = (1 - obj.rho_overall_at_T(T_ctr)/inclusion.liqvap_density(obj.T(T_ctr))/1000);
+    minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.T(T_ctr))/rhoc*1000;
 
-% Put the salt term here: A = C*w*Mw/Ms*dm.
-% C is the dissociation number, w the weight fraction of
-% salt, Mw and Ms the molecular weight of the salt and the
-% water. This is 2*0.05*0.308*dm for 5% NaCl.
-A = 0;
+    % Calculate the surface tension
+    tau = Tc/obj.T(T_ctr);
+    stprime = rc/(obj.V/1e18)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
 
-% This will be the funtion to minimise
-helmholtz_function = @(minvars) isochoricobjective(minvars(1), minvars(2), tau, A, stprime, coeffs, dm);
+    % Put the salt term here: A = C*w*Mw/Ms*dm.
+    % C is the dissociation number, w the weight fraction of
+    % salt, Mw and Ms the molecular weight of the salt and the
+    % water. This is 2*0.05*0.308*dm for 5% NaCl.
+    A = 0;
 
-% Minimise the helmholtz energy
-try
-	[minvars_corrected, ~, exitflag_corrected] = fmincon(helmholtz_function, minvars_corrected, [],[],[],[],[0 0],[1 Inf],[],options);
-catch
-	
-	% There seems to be a problem minimising the energy. Probably,
-	% there is no bubble possible
-	r = NaN;
-	if (nargout > 1)
-		% The density was asked too, so save it.
-		steamDensity_corrected = NaN;
-	end;
-	exitflag_corrected = 0;
-	
-end;
+    % This will be the funtion to minimise
+    helmholtz_function = @(minvars) isochoricobjective(minvars(1), minvars(2), tau, A, stprime, coeffs, dm);
 
-if ~(~exitflag_corrected || minvars_corrected(1) < 0 || isnan(minvars_corrected(1)) || ~isreal(minvars_corrected(1))  || minvars_corrected(1) <= 1e-9)
+    % Minimise the helmholtz energy
+    try
+        [minvars_corrected, ~, exitflag_corrected] = fmincon(helmholtz_function, minvars_corrected, [],[],[],[],[0 0],[1 Inf],[],options);
+    catch
 
-	% There is a bubble possible. Calculate it's radius and save it
-	r = (3*obj.V/1e18.*minvars_corrected(1)./ (4 * pi)).^(1/3)*1e6;
-	if (nargout > 1)
-		% The density was asked too, so save it.
-		steamDensity_corrected = minvars_corrected(2) * rhoc;
-	end;
+        % There seems to be a problem minimising the energy. Probably,
+        % there is no bubble possible
+        obj.store_r(T_ctr) = NaN;
+        return;
+    end
 
-end;
-        
+    if ~(~exitflag_corrected || minvars_corrected(1) < 0 || isnan(minvars_corrected(1)) || ~isreal(minvars_corrected(1))  || minvars_corrected(1) <= 1e-9)
+
+        % There is a bubble possible. Calculate it's radius and save it
+        obj.store_r(T_ctr) = (3*obj.V/1e18.*minvars_corrected(1)./ (4 * pi)).^(1/3)*1e6;
+    else
+        % There seems to be a problem minimising the energy. Probably,
+        % there is no bubble possible
+        obj.store_r(T_ctr) = NaN;
+    end
+    
+end
+
 % Done
-return;
+return

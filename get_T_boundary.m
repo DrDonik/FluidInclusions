@@ -42,8 +42,6 @@ rc = 1.1808741e-8;
 b = -0.625;
 mu = 1.256;
 
-rhoOverallInitial = inclusion.liqvap_density(obj.Th_inf)*1000;
-
 if calc_prograde_boundary; dir = 1; else dir = -1; end;
 T_boundary_working = obj.pressureMinimum;
 
@@ -91,7 +89,7 @@ while step >= tolerance
         
         % Apply the volume correction
         [reftemp, alpha_V] = expansion_coeff(obj, T_boundary_working);
-        rho_overall_at_T = rhoOverallInitial*((1-(reftemp-obj.Th_inf+273.15)*alpha_V)/(1-(reftemp-T_boundary_working+273.15)*alpha_V));
+        rho_overall_at_T = obj.rho_overall*((1-(reftemp-obj.Th_inf+273.15)*alpha_V)/(1-(reftemp-T_boundary_working+273.15)*alpha_V));
         dm = rho_overall_at_T/rhoc;
         
         % Calculate the surface tension

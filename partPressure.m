@@ -3,14 +3,17 @@
 % r to this function. Feed the bubble-radius in um, I will
 % convert it to SI.
 
-function [P_vapour, P_liquid] = partPressure(obj)
+function obj = partPressure(obj)
 
-P0 = saturationPressure(obj.T);
-rho_liquid = inclusion.liqvap_density(obj.T);
-rho_vapour = inclusion.liqvap_density_vapour(obj.T);
+for T_ctr = find(obj.store_p_l==0)
 
-delta_P = 2*inclusion.surface_tension(obj.T)/(obj.r/1e6);
+    P0 = saturationPressure(obj.T(T_ctr));
+    rho_liquid = inclusion.liqvap_density(obj.T(T_ctr));
+    rho_vapour = inclusion.liqvap_density_vapour(obj.T(T_ctr));
 
-P_liquid = P0 - rho_liquid/(rho_liquid - rho_vapour)*delta_P;
-P_vapour = P0 - rho_vapour/(rho_liquid - rho_vapour)*delta_P;
+    delta_P = 2*inclusion.surface_tension(obj.T(T_ctr))/(obj.r/1e6);
 
+    obj.store_p_l = P0 - rho_liquid/(rho_liquid - rho_vapour)*delta_P;
+    obj.store_p_v = P0 - rho_vapour/(rho_liquid - rho_vapour)*delta_P;
+
+end

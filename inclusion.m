@@ -106,7 +106,6 @@ classdef inclusion < hgsetget
     
     properties (Dependent, SetAccess = private)
         r               % The radius of the vapour bubble at temperature(s) T, in um
-        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
         T_sp            % The temperature at which the bubble becomes unstable, in K
         r_sp            % The radius of the vapour bubble at T_sp, in um
         T_sp_r          % The retrograde temperature at which the bubble becomes unstable, in K
@@ -118,6 +117,8 @@ classdef inclusion < hgsetget
     end
     
     properties (Dependent, SetAccess = private, Hidden)
+        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
+
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
         
@@ -125,7 +126,7 @@ classdef inclusion < hgsetget
         flowerBoundary % The minimum necessary Th_inf for this volume so that a bubble is possible
     end
     
-    properties (Access = protected)
+    properties (Access = private)
         % The store_ properties are used to store once calculated values
         % of the different temperatures and radii.
         
@@ -138,9 +139,7 @@ classdef inclusion < hgsetget
         store_r_bin     % The radius of the vapour bubble at T_bin, in um
         store_T_bin_r   % The retrograde temperature at which the bubble becomes metastable, in K
         store_r_bin_r   % The radius of the vapour bubble at T_bin_r, in um    
-    end
-    
-    properties (Access = private)
+
         store_T         % The "current" temperature(s) of the inclusion, in K
         store_r         % The radius of the vapour bubble at temperature(s) T, in um
         store_p_l       % The liquid pressure at temperature(s) T, in Pa
@@ -413,7 +412,8 @@ classdef inclusion < hgsetget
         
         function value = get.r_pressureMinimum(obj)
             if isempty(obj.store_r_pressureMinimum)
-                obj.store_r_pressureMinimum = get_r(obj, obj.pressureMinimum);
+                obj.T = obj.pressureMinimum;
+                obj.store_r_pressureMinimum = obj.r(obj.T == obj.pressureMinimum);
             end
             
             value = obj.store_r_pressureMinimum;
@@ -535,7 +535,7 @@ classdef inclusion < hgsetget
         
         function set.T(obj, value)
             % Whenever the user assigns new "current" temperatures, we have
-            % to reorder obj.store_r, obj.store_pv, obj.store_pl and 
+            % to reorder obj.store_r, obj.store_p_v, obj.store_p_l and 
             % obj.store_rho_overall_at_T since they will no longer match
             % with those temperatures. The old values of T will be kept, so
             % in fact you can just add values. To reset T, assign it an
@@ -567,7 +567,6 @@ classdef inclusion < hgsetget
             obj.store_p_v = zeros(size(value));
             obj.store_rho_overall_at_T = zeros(size(value));
             
-                        
             % save all the values that can be kept
             for T_ctr = 1:length(value)
             
@@ -594,7 +593,7 @@ classdef inclusion < hgsetget
 
         function value = get.r(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_r) || ~all(obj.store_r))
-                obj.store_r(obj.store_r == 0) = get_r(obj, obj.store_T(obj.store_r == 0));
+                get_r(obj);
             end
             
             value = obj.store_r;
@@ -614,8 +613,7 @@ classdef inclusion < hgsetget
         
         function value = get.p_l(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_l) || ~all(obj.store_p_l))
-                [obj.store_p_v(obj.store_p_v==0), obj.store_p_l(obj.store_p_l==0)] = ...
-                    inclusion.partPressure(obj.T(obj.store_p_l==0), obj.r(obj.store_p_l==0));
+                partPressure(obj);
             end
             
             value = obj.store_p_l;
@@ -623,8 +621,7 @@ classdef inclusion < hgsetget
 
         function value = get.p_v(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_v) || ~all(obj.store_p_v))
-                 [obj.store_p_v(obj.store_p_v==0), obj.store_p_l(obj.store_p_l==0)] = ...
-                    inclusion.partPressure(obj.T(obj.store_p_v==0), obj.r(obj.store_p_v==0));
+                partPressure(obj);
            end
             
             value = obj.store_p_v;
@@ -633,10 +630,10 @@ classdef inclusion < hgsetget
         %% Methods saved in files in the @inclusion folder
         
         [reftemp, alpha_V] = expansion_coeff(obj, T)
-        [r, steamDensity_corrected] = get_r(obj, T)
+        obj = get_r(obj)
 		[Th_inf, r] = calculateFlowerBoundary(obj, Th_obs_is_T_bin)
 		[T_boundary, r_boundary] = get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
-		[P_vapour, P_liquid] = partPressure(obj)
+		obj = partPressure(obj)
 
     end
     
@@ -651,6 +648,7 @@ classdef inclusion < hgsetget
 		[mineralNumber, pressureMinimum] = set_fi_mineral(mineralNumber)
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
+        sigma = surface_tension(T)
         
     end
         
