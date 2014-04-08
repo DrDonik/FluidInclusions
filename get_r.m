@@ -4,16 +4,13 @@
 % dg denotes vapour-density divided by the critical density of water
 % gm denotes the Bubble volume to inclusion volume ratio
 
-% I expect T and Th_inf to be input in K, V in um (Not SI!!!)
+% I expect T to be in K
 
 function [r, steamDensity_corrected] = ...
-    get_r(T, Th_inf, V)
+    get_r(obj, T)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
-
-% V was entered in um^3, so change it to SI.
-V = V*1e-18;
 
 % Some constants
 rhoc = 322;
@@ -26,11 +23,11 @@ mu = 1.256;
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
 % routine to take the Jacobian into account.
 options = optimset('TolX',1e-12,'TolFun',1e-15,'GradObj','on','Hessian','user-supplied','Algorithm','trust-region-reflective','Display','off','MaxIter',50);
-rhoOverallInitial = inclusion.liqvap_density(Th_inf)*1000;
+rhoOverallInitial = inclusion.liqvap_density(obj.Th_inf)*1000;
 
 % Apply the volume correction
-[reftemp, alpha_V] = inclusion.expansion_coeff(T);
-rho_correction = ((1-(reftemp-Th_inf+273.15)*alpha_V)/(1-(reftemp-T+273.15)*alpha_V));
+[reftemp, alpha_V] = expansion_coeff(obj, T);
+rho_correction = ((1-(reftemp-obj.Th_inf+273.15)*alpha_V)/(1-(reftemp-T+273.15)*alpha_V));
 rho_overall_at_T = rhoOverallInitial*rho_correction;
 dm = rho_overall_at_T/rhoc;
 
@@ -42,7 +39,7 @@ minvars_corrected(2) = inclusion.liqvap_density_vapour(T)/rhoc*1000;
 
 % Calculate the surface tension
 tau = Tc/T;
-stprime = rc/V.^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+stprime = rc/(obj.V/1e18)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
 
 % Put the salt term here: A = C*w*Mw/Ms*dm.
 % C is the dissociation number, w the weight fraction of
@@ -72,7 +69,7 @@ end;
 if ~(~exitflag_corrected || minvars_corrected(1) < 0 || isnan(minvars_corrected(1)) || ~isreal(minvars_corrected(1))  || minvars_corrected(1) <= 1e-9)
 
 	% There is a bubble possible. Calculate it's radius and save it
-	r = (3*V.*minvars_corrected(1)./ (4 * pi)).^(1/3)*1e6;
+	r = (3*obj.V/1e18.*minvars_corrected(1)./ (4 * pi)).^(1/3)*1e6;
 	if (nargout > 1)
 		% The density was asked too, so save it.
 		steamDensity_corrected = minvars_corrected(2) * rhoc;

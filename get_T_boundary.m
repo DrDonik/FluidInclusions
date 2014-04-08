@@ -2,19 +2,16 @@
 %specific volumes and densities
 %
 % [T_boundary, r_boundary] = 
-%     get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
+%     get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
 %
 % calculates the boundary temperature of an inclusion of a given size and a
 % given nominal homogenisation temperature.
-%   Th_inf is the nominal homogenization temperature (in Kelvin)
-%   V is the volume (in micrometers^3) for which the boundary temperatures 
+%   obj is the object of class inclusion for which the boundary temperature
 %     should be calculated
 %   calc_sp_boundary is whether you want the spinodal (1) or the binodal (0) 
 %     temperature
 %   calc_prograde_boundary is whether you want the prograde (1) or retrograde (0) 
 %     temperature
-%   pressureMinimum is the temperature of minimum pressure in the inclusion
-%   (and is used as is the initial guess for T_boundary)
 % All arguments are mandatory.
 % 
 % The output contains the calculated boundary temperature, T_boundary (in K) 
@@ -22,12 +19,12 @@
 %
 
 function [T_boundary, r_boundary] = ...
-    get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
+    get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
 
-tolerance = inclusion.get_tolerance;
+tolerance = inclusion.get_tolerance();
 
 % The fit options. Usually the fit converges after less than 10 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
@@ -45,13 +42,10 @@ rc = 1.1808741e-8;
 b = -0.625;
 mu = 1.256;
 
-% V was entered in um^3, so change it to SI.
-V = V*1e-18;
-
-rhoOverallInitial = inclusion.liqvap_density(Th_inf)*1000;
+rhoOverallInitial = inclusion.liqvap_density(obj.Th_inf)*1000;
 
 if calc_prograde_boundary; dir = 1; else dir = -1; end;
-T_boundary_working = pressureMinimum;
+T_boundary_working = obj.pressureMinimum;
 
 step = 1.25;
 
@@ -73,12 +67,12 @@ while step >= tolerance
         % will hold. We keep on heating (or cooling for retrograde)
         % the inclusion and check if there is still a bubble
         
-        if (sign(T_boundary_working + dir*step - pressureMinimum) ~= sign(T_boundary_working - pressureMinimum)) ...
-                && ((T_boundary_working - pressureMinimum) ~= 0)
+        if (sign(T_boundary_working + dir*step - obj.pressureMinimum) ~= sign(T_boundary_working - obj.pressureMinimum)) ...
+                && ((T_boundary_working - obj.pressureMinimum) ~= 0)
             % We will cross the pressure minimum. This is bad. So
             % change to the pressure minimum.
             if isnan(gm_out_corrected)
-                T_boundary_working = pressureMinimum;
+                T_boundary_working = obj.pressureMinimum;
                 disp('Returned to the pressure minimum')
                 gm_out_corrected = 1;
                 break;
@@ -87,7 +81,7 @@ while step >= tolerance
                 keyboard
             end
         elseif iterationCounter > 1
-            while sign(T_boundary_working + dir*step - Th_inf) == sign(calc_prograde_boundary);
+            while sign(T_boundary_working + dir*step - obj.Th_inf) == sign(calc_prograde_boundary);
                 % Make sure we don't cross Th_inf, since we know we
                 % will not find a bubble beyond that temperature.
                 step = step/5;
@@ -96,13 +90,13 @@ while step >= tolerance
         end;
         
         % Apply the volume correction
-        [reftemp, alpha_V] = inclusion.expansion_coeff(T_boundary_working);
-        rho_overall_at_T = rhoOverallInitial*((1-(reftemp-Th_inf+273.15)*alpha_V)/(1-(reftemp-T_boundary_working+273.15)*alpha_V));
+        [reftemp, alpha_V] = expansion_coeff(obj, T_boundary_working);
+        rho_overall_at_T = rhoOverallInitial*((1-(reftemp-obj.Th_inf+273.15)*alpha_V)/(1-(reftemp-T_boundary_working+273.15)*alpha_V));
         dm = rho_overall_at_T/rhoc;
         
         % Calculate the surface tension
         tau = Tc/T_boundary_working;
-        stprime = rc/V^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+        stprime = rc/(obj.V/1e18)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
         
         % Put the salt term here: A = C*w*Mw/Ms*dm.
         % C is the dissociation number, w the weight fraction of
@@ -163,10 +157,10 @@ end;
 % bubble, and then we'll save the value for T_boundary accordingly.
 if isnan(gm_out_corrected)
     T_boundary = T_boundary_working-dir*step;
-    r_boundary = (3 * V * temp_save_gm / (4 * pi))^(1/3)*1e6;
+    r_boundary = (3 * obj.V/1e18 * temp_save_gm / (4 * pi))^(1/3)*1e6;
 else
     T_boundary = T_boundary_working;
-    r_boundary = (3 * V * gm_out_corrected / (4 * pi))^(1/3)*1e6;
+    r_boundary = (3 * obj.V/1e18 * gm_out_corrected / (4 * pi))^(1/3)*1e6;
 end;
 
 % Done.
