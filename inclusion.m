@@ -615,7 +615,7 @@ classdef inclusion < hgsetget
         function value = get.p_l(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_l) || ~all(obj.store_p_l))
                 [obj.store_p_v(obj.store_p_v==0), obj.store_p_l(obj.store_p_l==0)] = ...
-                    inclusion.jaropressure(obj.T(obj.store_p_l==0), obj.r(obj.store_p_l==0));
+                    inclusion.partPressure(obj.T(obj.store_p_l==0), obj.r(obj.store_p_l==0));
             end
             
             value = obj.store_p_l;
@@ -624,7 +624,7 @@ classdef inclusion < hgsetget
         function value = get.p_v(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_v) || ~all(obj.store_p_v))
                  [obj.store_p_v(obj.store_p_v==0), obj.store_p_l(obj.store_p_l==0)] = ...
-                    inclusion.jaropressure(obj.T(obj.store_p_v==0), obj.r(obj.store_p_v==0));
+                    inclusion.partPressure(obj.T(obj.store_p_v==0), obj.r(obj.store_p_v==0));
            end
             
             value = obj.store_p_v;
@@ -649,7 +649,7 @@ classdef inclusion < hgsetget
 		tolerance = get_tolerance()
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
-		[P_vapour, P_liquid] = jaropressure(T, r)
+		[P_vapour, P_liquid] = partPressure(T, r)
         
     end
         
