@@ -647,7 +647,6 @@ classdef inclusion < hgsetget
 		[T_boundary, r_boundary] = get_T_boundary(Th_inf, V, calc_sp_boundary, calc_prograde_boundary, pressureMinimum)
 		[r, steamDensity_corrected] = get_r(T, Th_inf, V)
 		[P_vapour, P_liquid] = jaropressure(T, r)
-		[ f, g, h ] = isochoricobjective(gm, dg, tau, A, stprime, coeffs, dm)
         
     end
         
