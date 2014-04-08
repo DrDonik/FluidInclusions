@@ -24,7 +24,7 @@ function [T_boundary, r_boundary] = ...
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
 
-tolerance = inclusion.get_tolerance();
+tolerance = 1e-5;
 
 % The fit options. Usually the fit converges after less than 10 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit

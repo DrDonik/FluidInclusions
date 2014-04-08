@@ -641,13 +641,14 @@ classdef inclusion < hgsetget
     end
     
     methods (Static)
-        %% static methods
+	    %% static methods of the class
+		
+		obj = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, Th_inf, V)
+	
+        %% static helper methods
 
         coeffs = readIAPWS95data()
 		[mineralNumber, pressureMinimum] = set_fi_mineral(mineralNumber)
-		[mineralNumber, pressureMinimum] = get_fi_mineral()
-		tolerance = set_tolerance(tolerance)
-		tolerance = get_tolerance()
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
         

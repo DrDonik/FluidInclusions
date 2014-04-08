@@ -1,0 +1,234 @@
+%get_Th_inf  Calculate Th_inf from Th_obs and r_obs
+%
+% inclusionObject = 
+%              get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, Th_inf, V)
+%
+% Calculates the nominal homogenisation temperature and the volume of a
+% fluid inclusion
+%   Th_obs: Th_obs of the inclusion (in K)
+%   r_obs: r_obs of the inclusion (in um)
+%   Th_obs_is_T_bin: Whether Th_obs corresponds to T_bin (1 or 0)
+%   Th_inf: The initial guess for Th_inf (in K)
+%   V: The initial guess for V (in um^3)
+% All arguments are mandatory
+%
+% The inclusionObject will be a fully valid inclusion object matching your 
+% desired values.
+%
+
+function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, Th_inf, V)
+
+% Check for the host mineral. If you want to change it, run set_fi_mineral
+[mineralNumber, pressureMinimum] = inclusion.set_fi_mineral();
+
+root_pos = [r_obs; Th_obs];
+
+tolerance = 1e-5;
+
+progress_counter = 0;
+
+inclusionObject = inclusion(Th_inf, V, mineralNumber);
+
+if Th_obs_is_T_bin
+	[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
+else
+	[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
+end;
+
+Th_inf_step = -1;
+V_step = -V/1e3;
+
+while abs(Th_obs_calculated - Th_obs) > tolerance || ...
+        abs(radius_out_corrected - r_obs) > tolerance
+    
+    progress_counter = progress_counter+1;
+    
+    Th_obs_calculated_old = Th_obs_calculated;
+    radius_out_corrected_old = radius_out_corrected;
+    
+    Th_obs_calculated = NaN; % This is for NaN-Catching
+    radius_out_corrected = NaN;
+    
+    while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+
+        % Sometimes it happens that we cross pressureMinimum. This is bad, so try
+        % to recover:
+        while Th_inf - Th_inf_step < pressureMinimum
+            Th_inf_step = Th_inf_step/2;
+        end;
+        
+        % First, do the step in Th_inf-direction
+        Th_inf = Th_inf - Th_inf_step;
+        
+        % This is for NaN-Catching. If the flower-boundary is crossed,
+        % Th_obs and radius_out_corrected become NaN. If only one of them
+        % becomes NaN, you requested strange things, such as a different
+        % pressureMinimum.
+        Th_obs_calculated = NaN;
+        radius_out_corrected = NaN;
+        while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+			inclusionObject = inclusion(Th_inf, V, mineralNumber);
+			
+			if Th_obs_is_T_bin
+				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
+			else
+				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
+			end;
+			if isnan(Th_obs_calculated)
+                if sign(Th_inf_step) == 1;
+                    % we probably crossed the flower boundary
+                    Th_inf_step = Th_inf_step/2;
+                    Th_inf = Th_inf + Th_inf_step;
+                else
+                    % Something else went wrong.
+                    keyboard;
+                    %break;
+                end;
+            elseif isnan(radius_out_corrected)
+                % You shouldn't end here, unless your PressureMinimum is not the
+                % original from set_fi_mineral
+                if Th_obs_calculated < pressureMinimum
+                    % Told you. Let's try to recover.
+                    Th_inf_step = Th_inf_step/2;
+                    Th_inf = Th_inf + Th_inf_step;
+                else
+                    % You definitely should never end here!
+                    keyboard;
+                    %break;
+                end;
+            end;
+        end;
+
+        % Calculate the derivative
+        r_grad_Th_inf = (radius_out_corrected_old - radius_out_corrected)/Th_inf_step;
+        Th_obs_grad_Th_inf = (Th_obs_calculated_old - Th_obs_calculated)/Th_inf_step;
+        % go back
+        Th_inf = Th_inf + Th_inf_step;
+
+        % Sometimes it happens that the V_step is too big and the volume would
+        % become negative. This is bad, so prevent it from happening and define
+        % an arbitrary step instead.
+        while V - V_step < 0
+            V_step = V_step/2;
+        end;
+
+        % Now do the step in V-direction
+        V = V - V_step;
+        
+        % This is for NaN-Catching. See above for details
+        Th_obs_calculated = NaN;
+        radius_out_corrected = NaN;
+        while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+			inclusionObject = inclusion(Th_inf, V, mineralNumber);
+			
+			if Th_obs_is_T_bin
+				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
+			else
+				[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
+			end;
+			if isnan(Th_obs_calculated);
+                if sign(V_step) == 1;
+                    % we probably crossed the flower boundary
+                    V_step = V_step/2;
+                    V = V + V_step;
+                else
+                    % Something else went wrong.
+                    keyboard;
+                    %break;
+                end;
+            elseif isnan(radius_out_corrected)
+                % You shouldn't end here, unless your PressureMinimum is not the
+                % original from set_fi_mineral
+                if Th_obs_calculated < pressureMinimum
+                    % Told you. Let's try to recover.
+                    V_step = V_step/2;
+                    V = V + V_step;
+                else
+                    % You definitely should never end here!
+                    keyboard;
+                    %break;
+                end;
+            end;
+        end;
+                
+        % Calculate the derivative
+        r_grad_V = (radius_out_corrected_old - radius_out_corrected)/V_step;
+        Th_obs_grad_V = (Th_obs_calculated_old - Th_obs_calculated)/V_step;
+
+        % What we just did is calculate the Jacobian:
+        Jc = [r_grad_Th_inf r_grad_V; Th_obs_grad_Th_inf Th_obs_grad_V];
+
+        % Now go to the new position (We didn't change the colume back ...)
+        Th_inf = Th_inf - Th_inf_step;
+
+		inclusionObject = inclusion(Th_inf, V, mineralNumber);
+		
+		if Th_obs_is_T_bin
+			[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_bin, inclusionObject.r_bin];
+		else
+			[Th_obs_calculated, radius_out_corrected] = [inclusionObject.T_sp, inclusionObject.r_sp];
+		end;
+        
+        % If one of the two is NaN here, we have to redo the whole thing,
+        % since the combination of the two new values doesn't work.
+        if isnan(Th_obs_calculated)
+            % we probably crossed the flower boundary, so let's go back
+            % and try again
+            V = V + V_step;
+            V_step = V_step/2;
+            Th_inf = Th_inf + Th_inf_step;
+            Th_inf_step = Th_inf_step/2;
+        elseif isnan(radius_out_corrected);
+            % You shouldn't end here, unless your PressureMinimum is not the
+            % original from set_fi_mineral
+            if Th_obs_calculated < pressureMinimum
+                % Told you. Let's try to recover.
+                Th_inf_step = Th_inf_step/2;
+                Th_inf = Th_inf + Th_inf_step;
+            else
+                % You definitely should never end here! If you do, I have
+                % to give up.
+                keyboard;
+                %break;
+            end;
+        end;
+        
+    end;
+
+    % The vectorised version of the function looks as follows
+    F_vec = [radius_out_corrected; Th_obs_calculated];
+    
+    % The next step should take us to a better guess and will be calculated
+    % using Newton's method
+    % The backslash here is a left multiplication of the inverse of the
+    % Jacobian
+    
+    next_step_vec = Jc\(F_vec - root_pos);
+    
+    if isnan(next_step_vec(1)) || isnan(next_step_vec(2));
+        % We'll end here if JC doesn't have an inverse.
+        % Maybe one of the steps is too small, then we don't have to make
+        % that step. Let's figure it out:
+        keyboard
+        %Jc = [r_grad_Th_inf r_grad_V; Th_obs_grad_Th_inf Th_obs_grad_V];
+
+        %next_step_vec = pinv(Jc)*(F_vec - root_pos);
+    end;
+
+    Th_inf_step = next_step_vec(1);
+    V_step = next_step_vec(2);
+    
+    if abs(Th_inf_step/Th_inf) < tolerance/100 && ...
+            abs(V_step/V) < tolerance/100;
+        disp('Relative step size in Th_inf and relative step size in V smaller than 1% of tolerance');
+        break;
+    end
+    
+    if progress_counter >= 12
+        disp('Too many iterations');
+        break;
+    end;
+    
+end;
+
+return;
