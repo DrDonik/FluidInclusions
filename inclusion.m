@@ -89,15 +89,28 @@ classdef inclusion < hgsetget
     
     %% Properties
     
-    properties (SetAccess = immutable)  
-        Th_inf          % The nominal homogenization temperature of the inclusion, in K
+    properties (Dependent)
+        Th_inf          % The nominal homogenization temperature of the inclusion, in C
         V               % The volume of the inclusion, in um^3
     end
     
+    properties %(SetAccess = immutable)  
+        mineral         % The name of the mineral
+    end
+    
+    properties (Dependent, Hidden)
+        T_pressureMinimum   % The temperature of the pressure minimum
+    end
+    
     properties (SetAccess = immutable, Hidden)
-        mineralNumber = 2;              % The host mineral
-        pressureMinimum = 5.15+273.15;  % The temperature of maximum density, in K
         rho_overall     % The mean density of the liquid in the inclusion at Th_inf, in kg/m^3
+    end
+    
+    properties (SetAccess = immutable, GetAccess = private)
+        store_Th_inf    % This is to store Th_inf, in K
+        store_V         % This is to store V, in m^3
+        mineralNumber = 2;              % The host mineral
+        store_T_pressureMinimum = 5.15+273.15;  % The temperature of maximum density, in K
     end
     
     properties (Dependent)
@@ -106,6 +119,8 @@ classdef inclusion < hgsetget
     
     properties (Dependent, SetAccess = private)
         r               % The radius of the vapour bubble at temperature(s) T, in um
+        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
+
         T_sp            % The temperature at which the bubble becomes unstable, in K
         r_sp            % The radius of the vapour bubble at T_sp, in um
         T_sp_r          % The retrograde temperature at which the bubble becomes unstable, in K
@@ -114,8 +129,6 @@ classdef inclusion < hgsetget
         r_bin           % The radius of the vapour bubble at T_bin, in um
         T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in K
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
-
-        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
     end
     
     properties (Dependent, SetAccess = private, Hidden)
@@ -165,30 +178,20 @@ classdef inclusion < hgsetget
             end
             
             if isempty(mineralNumber)
-                [obj.mineralNumber, obj.pressureMinimum] = inclusion.set_fi_mineral();
+                [obj.mineralNumber, obj.store_T_pressureMinimum, obj.mineral] = inclusion.set_fi_mineral();
             else
-                [obj.mineralNumber, obj.pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
+                [obj.mineralNumber, obj.store_T_pressureMinimum, obj.mineral] = inclusion.set_fi_mineral(mineralNumber);
             end
             
             if length(V) > 1 || length(Th_inf) > 1 || length(mineralNumber) > 1
                 disp('One inclusion can only have one volume and homogenisation temperature');
                 return;
             end
-            
-            if Th_inf < 200;
-                disp('You forgot to convert to Kelvin')
-                return;
-            end
 
-            if V < 1e-3; 
-                disp('Please specify the volume in um^3')
-                return;
-            end
-
-            obj.Th_inf = Th_inf;
-            obj.V = V;
+            obj.store_Th_inf = Th_inf + 273.15;
+            obj.store_V = V/1e18;
             
-            obj.rho_overall = inclusion.liqvap_density(Th_inf)*1000;
+            obj.rho_overall = inclusion.liqvap_density(obj.store_Th_inf)*1000;
             
         end
         
@@ -287,7 +290,8 @@ classdef inclusion < hgsetget
                     disp('No entry matches the requested temperature')
                     decision = input('Do you want me to calculate all missing values? [y/N]: ', 's');
                     if strcmp(decision,'y') || strcmp(decision,'Y') || strcmp(decision,'yes') || strcmp(decision,'Yes') || strcmp(decision,'YES')
-                        set(obj_array,'T',T_obs);                    
+                        set(obj_array,'T',T_obs);
+						logical_indices = ones(size(obj_array));
                     else
                         obj = [];
                         R = [];
@@ -300,6 +304,7 @@ classdef inclusion < hgsetget
                     
                     if strcmp(decision,'y') || strcmp(decision,'Y') || strcmp(decision,'yes') || strcmp(decision,'Yes') || strcmp(decision,'YES')
                         set(obj_array,'T',T_obs);
+						logical_indices = ones(size(obj_array));
                     else
                         disp('Your match will probably not be correct.')
                     end
@@ -410,10 +415,22 @@ classdef inclusion < hgsetget
         
         %% Methods for properties that will not change with temperature T
         
+        function value = get.Th_inf(obj)
+            value = obj.store_Th_inf - 273.15;
+        end
+        
+        function value = get.V(obj)
+            value = obj.store_V*1e18;
+        end
+        
+        function value = get.T_pressureMinimum(obj)
+            value = obj.store_T_pressureMinimum - 273.15;
+        end
+        
         function value = get.r_pressureMinimum(obj)
             if isempty(obj.store_r_pressureMinimum)
-                obj.T = obj.pressureMinimum;
-                obj.store_r_pressureMinimum = obj.r(obj.T == obj.pressureMinimum);
+                obj.T = obj.store_T_pressureMinimum;
+                obj.store_r_pressureMinimum = obj.r(obj.store_T == obj.store_T_pressureMinimum);
             end
             
             value = obj.store_r_pressureMinimum;
@@ -437,7 +454,7 @@ classdef inclusion < hgsetget
                 end
             end
             
-            value = obj.store_T_sp;
+            value = obj.store_T_sp - 273.15;
         end
 
         function value = get.r_sp(obj)
@@ -463,7 +480,7 @@ classdef inclusion < hgsetget
                 end
             end
             
-            value = obj.store_T_sp_r;
+            value = obj.store_T_sp_r - 273.15;
         end
         
         function value = get.r_sp_r(obj)
@@ -489,7 +506,7 @@ classdef inclusion < hgsetget
                 end
             end
 
-            value = obj.store_T_bin;
+            value = obj.store_T_bin - 273.15;
         end
 
         function value = get.r_bin(obj)
@@ -515,7 +532,7 @@ classdef inclusion < hgsetget
                 end
             end
             
-            value = obj.store_T_bin_r;
+            value = obj.store_T_bin_r - 273.15;
         end
     
         function value = get.r_bin_r(obj)
@@ -541,6 +558,8 @@ classdef inclusion < hgsetget
             % in fact you can just add values. To reset T, assign it an
             % empty array.
             
+            % If an empty value is assigned, we reset T and all dependent
+            % values
             if isempty(value)
                 obj.store_r = [];                                   
                 obj.store_p_l = [];
@@ -550,6 +569,9 @@ classdef inclusion < hgsetget
                 obj.store_T = [];
                 return
             end;
+            
+            % We expect T to be input in C, convert it to K here
+            value = value + 273.15;
             
             temp_store_T = obj.store_T;
             
@@ -576,7 +598,7 @@ classdef inclusion < hgsetget
                     obj.store_p_l(T_ctr) = temp_store_p_l(index);
                     obj.store_p_v(T_ctr) = temp_store_p_v(index);
                     obj.store_rho_overall_at_T(T_ctr) = temp_store_rho_overall_at_T(index);
-                elseif value(T_ctr) > obj.Th_inf
+                elseif value(T_ctr) > obj.store_Th_inf
                     obj.store_r(T_ctr) = NaN;                                   
                     obj.store_p_l(T_ctr) = NaN;
                     obj.store_p_v(T_ctr) = NaN;
@@ -588,7 +610,7 @@ classdef inclusion < hgsetget
         end
         
         function value = get.T(obj)
-            value = obj.store_T;
+            value = obj.store_T - 273.15;
         end
 
         function value = get.r(obj)
@@ -604,7 +626,7 @@ classdef inclusion < hgsetget
                 [reftemp, alpha_V] = expansion_coeff(obj, obj.store_T(obj.store_rho_overall_at_T == 0));
 
                 obj.store_rho_overall_at_T(obj.store_rho_overall_at_T == 0) = ...
-                   obj.rho_overall * ((1-(reftemp-obj.Th_inf+273.15)*alpha_V) ./ ...
+                   obj.rho_overall * ((1-(reftemp-obj.store_Th_inf+273.15)*alpha_V) ./ ...
                    (1-(reftemp+273.15-obj.store_T(obj.store_rho_overall_at_T == 0)).*alpha_V));
             end
             
@@ -649,7 +671,7 @@ classdef inclusion < hgsetget
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
         sigma = surface_tension(T)
-        
+                        
     end
         
 end
