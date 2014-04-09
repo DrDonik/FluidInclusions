@@ -94,12 +94,16 @@ classdef inclusion < hgsetget
         V               % The volume of the inclusion, in um^3
     end
     
-    properties %(SetAccess = immutable)  
+    properties (SetAccess = immutable)  
         mineral         % The name of the mineral
     end
     
     properties (Dependent, Hidden)
         T_pressureMinimum   % The temperature of the pressure minimum
+    end
+    
+    properties (Dependent, SetAccess = private)
+        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
     end
     
     properties (SetAccess = immutable, Hidden)
@@ -119,7 +123,6 @@ classdef inclusion < hgsetget
     
     properties (Dependent, SetAccess = private)
         r               % The radius of the vapour bubble at temperature(s) T, in um
-        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
 
         T_sp            % The temperature at which the bubble becomes unstable, in K
         r_sp            % The radius of the vapour bubble at T_sp, in um
@@ -177,17 +180,17 @@ classdef inclusion < hgsetget
                 mineralNumber = [];
             end
             
+            if length(V) > 1 || length(Th_inf) > 1 || length(mineralNumber) > 1
+                disp('One inclusion can only have one volume and homogenisation temperature');
+                return;
+            end
+
             if isempty(mineralNumber)
                 [obj.mineralNumber, obj.store_T_pressureMinimum, obj.mineral] = inclusion.set_fi_mineral();
             else
                 [obj.mineralNumber, obj.store_T_pressureMinimum, obj.mineral] = inclusion.set_fi_mineral(mineralNumber);
             end
             
-            if length(V) > 1 || length(Th_inf) > 1 || length(mineralNumber) > 1
-                disp('One inclusion can only have one volume and homogenisation temperature');
-                return;
-            end
-
             obj.store_Th_inf = Th_inf + 273.15;
             obj.store_V = V/1e18;
             
@@ -429,8 +432,8 @@ classdef inclusion < hgsetget
         
         function value = get.r_pressureMinimum(obj)
             if isempty(obj.store_r_pressureMinimum)
-                obj.T = obj.store_T_pressureMinimum;
-                obj.store_r_pressureMinimum = obj.r(obj.store_T == obj.store_T_pressureMinimum);
+                obj.T = obj.T_pressureMinimum;
+                obj.store_r_pressureMinimum = obj.r(obj.T == obj.T_pressureMinimum);
             end
             
             value = obj.store_r_pressureMinimum;
@@ -667,11 +670,11 @@ classdef inclusion < hgsetget
         %% static helper methods
 
         coeffs = readIAPWS95data()
-		[mineralNumber, pressureMinimum] = set_fi_mineral(mineralNumber)
+		[mineralNumber, pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
         sigma = surface_tension(T)
-                        
+        
     end
         
 end
