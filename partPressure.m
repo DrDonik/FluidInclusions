@@ -7,11 +7,11 @@ function obj = partPressure(obj)
 
 for T_ctr = find(obj.store_p_l==0)
 
-    P0 = saturationPressure(obj.T(T_ctr));
-    rho_liquid = inclusion.liqvap_density(obj.T(T_ctr));
-    rho_vapour = inclusion.liqvap_density_vapour(obj.T(T_ctr));
+    P0 = saturationPressure(obj.store_T(T_ctr));
+    rho_liquid = inclusion.liqvap_density(obj.store_T(T_ctr));
+    rho_vapour = inclusion.liqvap_density_vapour(obj.store_T(T_ctr));
 
-    delta_P = 2*inclusion.surface_tension(obj.T(T_ctr))/(obj.r/1e6);
+    delta_P = 2*inclusion.surface_tension(obj.store_T(T_ctr))/(obj.r/1e6);
 
     obj.store_p_l = P0 - rho_liquid/(rho_liquid - rho_vapour)*delta_P;
     obj.store_p_v = P0 - rho_vapour/(rho_liquid - rho_vapour)*delta_P;

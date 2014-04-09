@@ -32,21 +32,21 @@ while step >= 0.002/5^5
     while gm_out_corrected > 1e-9
 
         Th_inf_working = Th_inf_working - step;
-        while Th_inf_working <= obj.pressureMinimum
+        while Th_inf_working <= obj.store_T_pressureMinimum
             step = step/5;
-            Th_inf_working = obj.pressureMinimum + step;
+            Th_inf_working = obj.store_T_pressureMinimum + step;
         end;
 
         rhoOverallInitial = inclusion.liqvap_density(Th_inf_working)*1000;
 
         % Apply the volume correction
         [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_working);
-        rho_overall_at_T = rhoOverallInitial*((1-(reftemp-Th_inf_working+273.15)*alpha_V)/(1-(reftemp-obj.pressureMinimum+273.15)*alpha_V));
+        rho_overall_at_T = rhoOverallInitial*((1-(reftemp-Th_inf_working+273.15)*alpha_V)/(1-(reftemp-obj.store_T_pressureMinimum+273.15)*alpha_V));
         dm = rho_overall_at_T/rhoc;
 
         % Calculate the surface tension
-        tau = Tc/obj.pressureMinimum;
-        stprime = rc/(obj.V/1e18)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+        tau = Tc/obj.store_T_pressureMinimum;
+        stprime = rc/(obj.store_V)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
 
         % Put the salt term here: A = C*w*Mw/Ms*dm.
         % C is the dissociation number, w the weight fraction of
@@ -60,8 +60,8 @@ while step >= 0.002/5^5
         % Make an initial estimate using IAPWS-95, pretending there was no
         % surface tension. These values will be larger, but close to the
         % final values.
-        minvars_corrected(1) = (1 - rho_overall_at_T/1000/inclusion.liqvap_density(obj.pressureMinimum));
-        minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.pressureMinimum)/rhoc*1000;
+        minvars_corrected(1) = (1 - rho_overall_at_T/1000/inclusion.liqvap_density(obj.store_T_pressureMinimum));
+        minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.store_T_pressureMinimum)/rhoc*1000;
 
         if minvars_corrected(1) > 0
             % Minimise the helmholtz energy
@@ -83,6 +83,6 @@ while step >= 0.002/5^5
 
 end
 
-r = (3 * obj.V/1e18 * gm_out_corrected / (4 * pi))^(1/3)*1e6;
+r = (3 * obj.store_V * gm_out_corrected / (4 * pi))^(1/3)*1e6;
 
 return

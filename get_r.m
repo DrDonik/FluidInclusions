@@ -31,12 +31,12 @@ for T_ctr = find(obj.store_r == 0)
     % Make an initial estimate using IAPWS-95, pretending there was no
     % surface tension. These values will be larger, but close to the
     % final values.
-    minvars_corrected(1) = (1 - obj.rho_overall_at_T(T_ctr)/inclusion.liqvap_density(obj.T(T_ctr))/1000);
-    minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.T(T_ctr))/rhoc*1000;
+    minvars_corrected(1) = (1 - obj.rho_overall_at_T(T_ctr)/inclusion.liqvap_density(obj.store_T(T_ctr))/1000);
+    minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.store_T(T_ctr))/rhoc*1000;
 
     % Calculate the surface tension
-    tau = Tc/obj.T(T_ctr);
-    stprime = rc/(obj.V/1e18)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+    tau = Tc/obj.store_T(T_ctr);
+    stprime = rc/(obj.store_V)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
 
     % Put the salt term here: A = C*w*Mw/Ms*dm.
     % C is the dissociation number, w the weight fraction of
@@ -61,7 +61,7 @@ for T_ctr = find(obj.store_r == 0)
     if ~(~exitflag_corrected || minvars_corrected(1) < 0 || isnan(minvars_corrected(1)) || ~isreal(minvars_corrected(1))  || minvars_corrected(1) <= 1e-9)
 
         % There is a bubble possible. Calculate it's radius and save it
-        obj.store_r(T_ctr) = (3*obj.V/1e18.*minvars_corrected(1)./ (4 * pi)).^(1/3)*1e6;
+        obj.store_r(T_ctr) = (3*obj.store_V.*minvars_corrected(1)./ (4 * pi)).^(1/3)*1e6;
     else
         % There seems to be a problem minimising the energy. Probably,
         % there is no bubble possible
