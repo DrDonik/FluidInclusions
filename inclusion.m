@@ -294,7 +294,7 @@ classdef inclusion < hgsetget
                     decision = input('Do you want me to calculate all missing values? [y/N]: ', 's');
                     if strcmp(decision,'y') || strcmp(decision,'Y') || strcmp(decision,'yes') || strcmp(decision,'Yes') || strcmp(decision,'YES')
                         set(obj_array,'T',T_obs);
-						logical_indices = ones(size(obj_array));
+						logical_indices = true(size(obj_array));
                     else
                         obj = [];
                         R = [];
@@ -307,7 +307,7 @@ classdef inclusion < hgsetget
                     
                     if strcmp(decision,'y') || strcmp(decision,'Y') || strcmp(decision,'yes') || strcmp(decision,'Yes') || strcmp(decision,'YES')
                         set(obj_array,'T',T_obs);
-						logical_indices = ones(size(obj_array));
+						logical_indices = true(size(obj_array));
                     else
                         disp('Your match will probably not be correct.')
                     end
