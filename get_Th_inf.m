@@ -53,8 +53,8 @@ for Th_obs_ctr = length(Th_obs):-1:1
     Th_inf_step = -1;
     V_step = -V(Th_obs_ctr)/1e3;
 
-    while abs(Th_obs_calculated - Th_obs) > tolerance || ...
-            abs(radius_out_corrected - r_obs) > tolerance
+    while abs(Th_obs_calculated - Th_obs(Th_obs_ctr)) > tolerance || ...
+            abs(radius_out_corrected - r_obs(Th_obs_ctr)) > tolerance
 
         iterationCounter = iterationCounter + 1;
 
