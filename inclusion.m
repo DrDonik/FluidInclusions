@@ -317,7 +317,6 @@ classdef inclusion < hgsetget
                 sub_obj_array = obj_array(logical_indices);
 
                 for r_ctr = length(sub_obj_array):-1:1
-                    if ~mod(r_ctr,100); disp(num2str(r_ctr)); end;
                     r(r_ctr) = sub_obj_array(r_ctr).r(find(sub_obj_array(r_ctr).T==T_obs, 1));
                     if Th_obs_is_T_bin
                         obj_Th_obs(r_ctr) = sub_obj_array(r_ctr).T_bin;
