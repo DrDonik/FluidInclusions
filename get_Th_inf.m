@@ -24,11 +24,14 @@ if nargin < 4
     if nargin < 3; Th_obs_is_T_bin = 0; end
     Th_inf = Th_obs + 5;
     V = ones(size(Th_obs))*1e7;
-else
-    if length(Th_inf) ~= length(Th_obs) || length(V) ~= length(Th_obs); inclusionObject = []; return; end;
+elseif length(Th_inf) ~= length(Th_obs) || length(V) ~= length(Th_obs)
+    inclusionObject = [];
+    return
 end
 
-[mineralNumber, pressureMinimum] = inclusion.set_fi_mineral();
+[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
+
+T_pressureMinimum = T_pressureMinimum - 273.15;
 
 tolerance = 1e-5;
 
@@ -36,7 +39,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
 
     root_pos = [r_obs(Th_obs_ctr); Th_obs(Th_obs_ctr)];
 
-    progress_counter = 0;
+    iterationCounter = 0;
 
     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
 
@@ -53,7 +56,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
     while abs(Th_obs_calculated - Th_obs) > tolerance || ...
             abs(radius_out_corrected - r_obs) > tolerance
 
-        progress_counter = progress_counter+1;
+        iterationCounter = iterationCounter + 1;
 
         Th_obs_calculated_old = Th_obs_calculated;
         radius_out_corrected_old = radius_out_corrected;
@@ -65,7 +68,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
 
             % Sometimes it happens that we cross pressureMinimum. This is bad, so try
             % to recover:
-            while Th_inf(Th_obs_ctr) - Th_inf_step < pressureMinimum
+            while Th_inf(Th_obs_ctr) - Th_inf_step < T_pressureMinimum
                 Th_inf_step = Th_inf_step/2;
             end;
 
@@ -101,7 +104,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
                 elseif isnan(radius_out_corrected)
                     % You shouldn't end here, unless your PressureMinimum is not the
                     % original from set_fi_mineral
-                    if Th_obs_calculated < pressureMinimum
+                    if Th_obs_calculated < T_pressureMinimum
                         % Told you. Let's try to recover.
                         Th_inf_step = Th_inf_step/2;
                         Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
@@ -156,7 +159,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
                 elseif isnan(radius_out_corrected)
                     % You shouldn't end here, unless your PressureMinimum is not the
                     % original from set_fi_mineral
-                    if Th_obs_calculated < pressureMinimum
+                    if Th_obs_calculated < T_pressureMinimum
                         % Told you. Let's try to recover.
                         V_step = V_step/2;
                         V(Th_obs_ctr) = V(Th_obs_ctr) + V_step;
@@ -199,7 +202,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
             elseif isnan(radius_out_corrected);
                 % You shouldn't end here, unless your PressureMinimum is not the
                 % original from set_fi_mineral
-                if Th_obs_calculated < pressureMinimum
+                if Th_obs_calculated < T_pressureMinimum
                     % Told you. Let's try to recover.
                     Th_inf_step = Th_inf_step/2;
                     Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
@@ -242,7 +245,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
             break;
         end
 
-        if progress_counter >= 12
+        if iterationCounter >= 12
             disp('Too many iterations');
             break;
         end;
