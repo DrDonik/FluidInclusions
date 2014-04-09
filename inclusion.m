@@ -276,8 +276,10 @@ classdef inclusion < hgsetget
                         obj_Th_obs(:, V_ctr) = [obj_array(:,V_ctr).T_sp];
                     end
                 end
-                    
-                [R, index] = min((obj_Th_obs(:)-Th_obs(:)).^2 + (r(:)-r_obs(:)).^2);
+                
+                for Th_obs_ctr = length(Th_obs):-1:1
+                    [R(Th_obs_ctr), index(Th_obs_ctr)] = min((obj_Th_obs(:)-Th_obs(Th_obs_ctr)).^2 + (r(:)-r_obs(Th_obs_ctr)).^2);
+                end
                 
             else
                 % Search for the entries that contain the requested
@@ -325,8 +327,10 @@ classdef inclusion < hgsetget
                     end
                 end
 
-                [R, sub_index] = min((obj_Th_obs - Th_obs).^2 + (r-r_obs).^2);
-                
+                for Th_obs_ctr = length(Th_obs):-1:1
+                    [R(Th_obs_ctr), sub_index(Th_obs_ctr)] = min((obj_Th_obs(:)-Th_obs(Th_obs_ctr)).^2 + (r(:)-r_obs(Th_obs_ctr)).^2);
+                end
+                                
                 indices = find(logical_indices);
                 index = indices(sub_index);
                 
