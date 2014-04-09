@@ -285,7 +285,7 @@ classdef inclusion < hgsetget
  
                 for V_ctr = size(obj_array,2):-1:1
                     for Th_inf_ctr = size(obj_array,1):-1:1
-                        logical_indices(Th_inf_ctr, V_ctr) = ~isempty(find(obj_array(Th_inf_ctr, V_ctr).store_T==T_obs, 1));
+                        logical_indices(Th_inf_ctr, V_ctr) = ~isempty(find(obj_array(Th_inf_ctr, V_ctr).T==T_obs, 1));
                     end
                 end
 
@@ -317,7 +317,8 @@ classdef inclusion < hgsetget
                 sub_obj_array = obj_array(logical_indices);
 
                 for r_ctr = length(sub_obj_array):-1:1
-                    r(r_ctr) = sub_obj_array(r_ctr).r(find(sub_obj_array(r_ctr).store_T==T_obs, 1));
+                    if ~mod(r_ctr,100); disp(num2str(r_ctr)); end;
+                    r(r_ctr) = sub_obj_array(r_ctr).r(find(sub_obj_array(r_ctr).T==T_obs, 1));
                     if Th_obs_is_T_bin
                         obj_Th_obs(r_ctr) = sub_obj_array(r_ctr).T_bin;
                     else
@@ -325,7 +326,7 @@ classdef inclusion < hgsetget
                     end
                 end
 
-                [R, sub_index] = min((obj_Th_obs-Th_obs).^2 + (r-r_obs).^2);
+                [R, sub_index] = min((obj_Th_obs - Th_obs).^2 + (r-r_obs).^2);
                 
                 indices = find(logical_indices);
                 index = indices(sub_index);
