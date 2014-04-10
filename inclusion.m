@@ -97,12 +97,12 @@ classdef inclusion < hgsetget
         mineral         % The name of the mineral
     end
     
-    properties (Dependent, Hidden)
-        T_pressureMinimum   % The temperature of the pressure minimum, in degree C
-    end
-    
     properties (Dependent, SetAccess = private)
         r_pressureMinimum   % The radius of the vapour bubble at the density maximum, in um
+    end
+    
+    properties (SetAccess = immutable, Dependent, Hidden)
+        T_pressureMinimum   % The temperature of the pressure minimum, in degree C
     end
     
     properties (SetAccess = immutable, Hidden)
