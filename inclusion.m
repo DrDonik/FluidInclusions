@@ -11,7 +11,7 @@
 %
 %   Th_inf
 %       The nominal homogenization temperatures of the inclusion, in
-%       Kelvin. This property is set during construction from user
+%       degree Celsius. This property is set during construction from user
 %       input.
 %   V
 %       The volumes of the inclusion, in um^3. This property is set
@@ -19,18 +19,16 @@
 %   mineralNumber
 %       The mineral number of the inclusion, i.e. the host type. This
 %       property is set during construction from user input or query.
-%   pressureMinimum
+%   T_pressureMinimum
 %       The temperature at which the internal pressure of the inclusion
-%       is minimal, in Kelvin.
+%       is minimal, in degree C.
 %   r_pressureMinimum
 %       The radius of the vapour bubble at the pressure minimum, in um.
 %   rho_overall
 %       The mean density of the inclusion at Th_inf, in kg/m^3
 %   T
-%       The "current" temperature(s) of the inclusion, in Kelvin. This
+%       The "current" temperature(s) of the inclusion, in degree C. This
 %       property is set using inclusion.T = values.
-%       Whenever you assign this property a new value, the bubble radii
-%       are reset and have to be recalculated anew upon the next query.
 %   r
 %       The bubble radii at temperature T, in um.
 %       This property is calculated as soon as it is queried.
@@ -42,14 +40,14 @@
 %       The mean density of the inclusion at the temperature(s) T
 %   T_sp, T_sp_r
 %       The pro- and retrograde temperatures, respectively, at which 
-%       the vapour bubble becomes unstable, in Kelvin.
+%       the vapour bubble becomes unstable, in degree C.
 %       This property is calculated as soon as it is queried.
 %   r_sp, r_sp_r
 %       The radiii of the vapour bubble at T_sp and T_sp_r, in um.
 %       This property is calculated as soon as it is queried.
 %   T_bin, T_bin_r
 %       The pro- and retrograde temperatures, respectively, at which 
-%       the vapour bubble becomes metastable, in Kelvin.
+%       the vapour bubble becomes metastable, in degree C.
 %       This property is calculated as soon as it is queried.
 %   r_bin, r_bin_r
 %       The radiii of the vapour bubble at T_bin and T_bin_r, in um.
