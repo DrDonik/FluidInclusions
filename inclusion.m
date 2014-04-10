@@ -3,15 +3,16 @@
 %   of information about inclusions. A new inclusion is constructed
 %   using obj = inclusion(Th_inf, V, mineral_number), the last being an 
 %   optional input (but asked during construction if omitted). Th_inf 
-%   has to be given in Kelvin, V in um^3.
+%   has to be given in degree Celsius, V in um^3.
 %   The new object will contain nothing but the information provided by
-%   the user at first, but can then be filled with information.
+%   the user at first, but is then be gradually filled with information as
+%   soon as they are queried.
 %
 %   Properties:
 %
 %   Th_inf
 %       The nominal homogenization temperatures of the inclusion, in
-%       degree Celsius. This property is set during construction from user
+%       degree C. This property is set during construction from user
 %       input.
 %   V
 %       The volumes of the inclusion, in um^3. This property is set
@@ -88,7 +89,7 @@ classdef inclusion < hgsetget
     %% Properties
     
     properties (Dependent)
-        Th_inf          % The nominal homogenization temperature of the inclusion, in C
+        Th_inf          % The nominal homogenization temperature of the inclusion, in degree C
         V               % The volume of the inclusion, in um^3
     end
     
@@ -97,38 +98,31 @@ classdef inclusion < hgsetget
     end
     
     properties (Dependent, Hidden)
-        T_pressureMinimum   % The temperature of the pressure minimum
+        T_pressureMinimum   % The temperature of the pressure minimum, in degree C
     end
     
     properties (Dependent, SetAccess = private)
-        r_pressureMinimum           % The radius of the vapour bubble at the density maximum, in um
+        r_pressureMinimum   % The radius of the vapour bubble at the density maximum, in um
     end
     
     properties (SetAccess = immutable, Hidden)
         rho_overall     % The mean density of the liquid in the inclusion at Th_inf, in kg/m^3
     end
     
-    properties (SetAccess = immutable, GetAccess = private)
-        store_Th_inf    % This is to store Th_inf, in K
-        store_V         % This is to store V, in m^3
-        mineralNumber = 2;              % The host mineral
-        store_T_pressureMinimum = 5.15+273.15;  % The temperature of maximum density, in K
-    end
-    
     properties (Dependent)
-        T               % The "current" temperature(s) of the inclusion, in K
+        T               % The "current" temperature(s) of the inclusion, in degree C
     end
     
     properties (Dependent, SetAccess = private)
         r               % The radius of the vapour bubble at temperature(s) T, in um
 
-        T_sp            % The temperature at which the bubble becomes unstable, in K
+        T_sp            % The temperature at which the bubble becomes unstable, in degree C
         r_sp            % The radius of the vapour bubble at T_sp, in um
-        T_sp_r          % The retrograde temperature at which the bubble becomes unstable, in K
+        T_sp_r          % The retrograde temperature at which the bubble becomes unstable, in degree C
         r_sp_r          % The radius of the vapour bubble at T_sp_r, in um
-        T_bin           % The temperature at which the bubble becomes metastable, in K
+        T_bin           % The temperature at which the bubble becomes metastable, in degree C
         r_bin           % The radius of the vapour bubble at T_bin, in um
-        T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in K
+        T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in degree C
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
     end
     
@@ -137,13 +131,20 @@ classdef inclusion < hgsetget
         p_v             % The vapour pressure at temperature(s) T, in Pa
         
         rho_overall_at_T        % The mean density of the inclusion at temperature(s) T, in kg/m^3
-        flowerBoundary % The minimum necessary Th_inf for this volume so that a bubble is possible
+        flowerBoundary  % The minimum necessary Th_inf for this volume so that a bubble is possible
     end
     
-    properties (Access = private)
+    properties (SetAccess = immutable, GetAccess = private)
         % The store_ properties are used to store once calculated values
         % of the different temperatures and radii.
         
+        store_Th_inf    % This is to store Th_inf, in K
+        store_V         % This is to store V, in m^3
+        mineralNumber = 2;              % The host mineral
+        store_T_pressureMinimum = 5.15+273.15;  % The temperature of maximum density, in K
+    end
+    
+    properties (Access = private)
         store_r_pressureMinimum      % The radius of the vapour bubble at the density maximum, in um
         store_T_sp      % The temperature at which the bubble becomes unstable, in K
         store_r_sp      % The radius of the vapour bubble at T_sp, in um
@@ -252,7 +253,9 @@ classdef inclusion < hgsetget
             % This will search through an array of inclusion objects and
             % return the entry that matches the requested combination of
             % Th_obs and r_obs most closely. Th_obs_is_T_bin decides
-            % which temperature Th_obs represent and is 0 by default.
+            % which temperature Th_obs represents and is 0 by default.
+            % If T_obs is set r_obs will be compared to the radius at this
+            % temperature instead of r_pressureMinimum.
             if nargin < 4
                 Th_obs_is_T_bin = 0;
             elseif Th_obs_is_T_bin > 1;
@@ -280,8 +283,7 @@ classdef inclusion < hgsetget
                 end
                 
             else
-                % Search for the entries that contain the requested
-                % temperature.
+                % Search for the entries that contain the requested temperature T_obs
  
                 for V_ctr = size(obj_array,2):-1:1
                     for Th_inf_ctr = size(obj_array,1):-1:1
@@ -563,8 +565,7 @@ classdef inclusion < hgsetget
             % in fact you can just add values. To reset T, assign it an
             % empty array.
             
-            % If an empty value is assigned, we reset T and all dependent
-            % values
+            % If an empty value is assigned, we reset T and all dependent values
             if isempty(value)
                 obj.store_r = [];                                   
                 obj.store_p_l = [];
