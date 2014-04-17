@@ -53,9 +53,8 @@ for Th_obs_ctr = length(Th_obs):-1:1
     Th_inf_step = -1;
     V_step = -V(Th_obs_ctr)/1e3;
 
-    while abs(Th_obs_calculated - Th_obs(Th_obs_ctr)) > tolerance || ...
-            abs(radius_out_corrected - r_obs(Th_obs_ctr)) > tolerance
-
+    while iterationCounter < 12
+        
         iterationCounter = iterationCounter + 1;
 
         Th_obs_calculated_old = Th_obs_calculated;
@@ -241,16 +240,27 @@ for Th_obs_ctr = length(Th_obs):-1:1
 
         if abs(Th_inf_step/Th_inf(Th_obs_ctr)) < tolerance/100 && ...
                 abs(V_step/V(Th_obs_ctr)) < tolerance/100;
-            disp('Relative step size in Th_inf and relative step size in V smaller than 1% of tolerance');
+            disp('Relative step size in Th_inf and V smaller than 1% of tolerance');
+            iterationCounter = 13; % There shall be no "too many iterations"-message
             break;
         end
 
-        if iterationCounter >= 12
-            disp('Too many iterations');
+        if abs(Th_obs_calculated - Th_obs(Th_obs_ctr)) < tolerance && ...
+            abs(radius_out_corrected - r_obs(Th_obs_ctr)) < tolerance
+            disp('Deviation of Th_obs and r_obs smaller than tolerance');
+            iterationCounter = 13; % There shall be no "too many iterations"-message
             break;
         end;
 
     end;
+    
+    if iterationCounter == 12
+        disp('Too many iterations');
+    end;
+    
+    disp(['Th_obs = ', num2str(Th_obs(Th_obs_ctr)) ,'C, r_obs = ', num2str(r_obs(Th_obs_ctr)), 'um']);
+    disp(['Th_inf = ', num2str(Th_inf(Th_obs_ctr)), 'C, V = ', num2str(V(Th_obs_ctr)), 'um^3']);
+    disp('');
     
 end;
 

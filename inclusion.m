@@ -97,7 +97,7 @@ classdef inclusion < hgsetget
         mineral         % The name of the mineral
     end
     
-    properties (Dependent, SetAccess = private)
+    properties (Dependent, SetAccess = protected)
         r_pressureMinimum   % The radius of the vapour bubble at the density maximum, in um
     end
     
@@ -113,7 +113,7 @@ classdef inclusion < hgsetget
         T               % The "current" temperature(s) of the inclusion, in degree C
     end
     
-    properties (Dependent, SetAccess = private)
+    properties (Dependent, SetAccess = protected)
         r               % The radius of the vapour bubble at temperature(s) T, in um
 
         T_sp            % The temperature at which the bubble becomes unstable, in degree C
@@ -126,7 +126,7 @@ classdef inclusion < hgsetget
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
     end
     
-    properties (Dependent, SetAccess = private, Hidden)
+    properties (Dependent, SetAccess = protected, Hidden)
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
         
@@ -134,7 +134,7 @@ classdef inclusion < hgsetget
         flowerBoundary  % The minimum necessary Th_inf for this volume so that a bubble is possible
     end
     
-    properties (SetAccess = immutable, GetAccess = private)
+    properties (SetAccess = immutable, GetAccess = protected)
         % The store_ properties are used to store once calculated values
         % of the different temperatures and radii.
         
@@ -144,7 +144,7 @@ classdef inclusion < hgsetget
         store_T_pressureMinimum = 5.15+273.15;  % The temperature of maximum density, in K
     end
     
-    properties (Access = private)
+    properties (Access = protected)
         store_r_pressureMinimum      % The radius of the vapour bubble at the density maximum, in um
         store_T_sp      % The temperature at which the bubble becomes unstable, in K
         store_r_sp      % The radius of the vapour bubble at T_sp, in um
@@ -181,6 +181,7 @@ classdef inclusion < hgsetget
             
             if length(V) > 1 || length(Th_inf) > 1 || length(mineralNumber) > 1
                 disp('One inclusion can only have one volume and homogenisation temperature');
+                obj = [];
                 return;
             end
 
@@ -677,7 +678,7 @@ classdef inclusion < hgsetget
 		rho = liqvap_density(T)
 		rho = liqvap_density_vapour(T)
         sigma = surface_tension(T)
-        
+                
     end
         
 end

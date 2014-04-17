@@ -18,7 +18,7 @@ rc = 1.1808741e-8;
 b = -0.625;
 mu = 1.256;
 
-% The fit options. Usually the fit converges after less than 10 iterations,
+% The fit options. Usually the fit converges after less than 50 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
 % routine to take the Jacobian into account.
 options = optimset('TolX',1e-12,'TolFun',1e-15,'GradObj','on','Hessian','user-supplied','Algorithm','trust-region-reflective','Display','off','MaxIter',50);

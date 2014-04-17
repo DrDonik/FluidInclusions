@@ -26,14 +26,14 @@ coeffs = inclusion.readIAPWS95data();
 
 tolerance = 1e-5;
 
-% The fit options. Usually the fit converges after less than 10 iterations,
+% The fit options. Usually the fit converges after less than 50 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
 % routine to take the Jacobian into account.
 TolX = 1e-13;
 TolFun = 1e-15;
 options = optimset('TolX',TolX,'TolFun',TolFun,'GradObj','on',...
     'Hessian','user-supplied','Algorithm','trust-region-reflective',...
-    'Display','off','MaxIter',10);
+    'Display','off','MaxIter',50);
 
 % Some constants
 rhoc = 322;
