@@ -669,7 +669,7 @@ classdef inclusion < hgsetget
     methods (Static)
 	    %% static methods of the class
 		
-		obj = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, Th_inf, V)
+		obj = get_Th_inf(Th_obs, r_obs, mineralNumber, Th_obs_is_T_bin, Th_inf, V)
 	
         %% static helper methods
 

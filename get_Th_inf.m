@@ -16,12 +16,17 @@
 % desired values.
 %
 
-function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, Th_inf, V)
+function inclusionObject = get_Th_inf(Th_obs, r_obs, mineralNumber, Th_obs_is_T_bin, Th_inf, V)
 
 if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
-if nargin < 4
-    if nargin < 3; Th_obs_is_T_bin = 0; end
+if nargin < 5
+	if nargin < 4
+		if nargin < 3; Th_obs_is_T_bin = 0; end
+		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
+	else
+		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
+	end
     Th_inf = Th_obs + 2;
 	initialStepTh_inf = -1;
     V = ones(size(Th_obs))*1e7;
@@ -30,11 +35,10 @@ elseif length(Th_inf) ~= length(Th_obs) || length(V) ~= length(Th_obs)
     inclusionObject = [];
     return
 else
+    [mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
 	initialStepTh_inf = -0.1;
 	initialStepVMultiplier = 1e-2;
 end
-
-[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
 
 T_pressureMinimum = T_pressureMinimum - 273.15;
 
@@ -56,7 +60,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
     radius_out_corrected = inclusionObject(Th_obs_ctr).r_pressureMinimum;
 
     Th_inf_step = initialStepTh_inf;
-    V_step = -V(Th_obs_ctr)*initialStepVMultiplier3;
+    V_step = -V(Th_obs_ctr)*initialStepVMultiplier;
 
     while iterationCounter < 12
         
