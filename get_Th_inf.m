@@ -22,11 +22,16 @@ if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
 if nargin < 4
     if nargin < 3; Th_obs_is_T_bin = 0; end
-    Th_inf = Th_obs + 5;
+    Th_inf = Th_obs + 2;
+	initialStepTh_inf = -1;
     V = ones(size(Th_obs))*1e7;
+	initialStepVMultiplier = 1e-4;
 elseif length(Th_inf) ~= length(Th_obs) || length(V) ~= length(Th_obs)
     inclusionObject = [];
     return
+else
+	initialStepTh_inf = -0.1;
+	initialStepVMultiplier = 1e-2;
 end
 
 [mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
@@ -50,8 +55,8 @@ for Th_obs_ctr = length(Th_obs):-1:1
     end;
     radius_out_corrected = inclusionObject(Th_obs_ctr).r_pressureMinimum;
 
-    Th_inf_step = -1;
-    V_step = -V(Th_obs_ctr)/1e3;
+    Th_inf_step = initialStepTh_inf;
+    V_step = -V(Th_obs_ctr)*initialStepVMultiplier3;
 
     while iterationCounter < 12
         
