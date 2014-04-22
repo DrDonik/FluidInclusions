@@ -27,7 +27,7 @@ if nargin < 6
 		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
         if nargin < 4
     		if nargin < 3; Th_obs_is_T_bin = 0; end
-            T_obs = T_pressureMinimum;
+            T_obs = T_pressureMinimum - 273.15;
         end
 	else
 		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
