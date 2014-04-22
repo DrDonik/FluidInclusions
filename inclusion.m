@@ -1,35 +1,35 @@
 %obj = inclusion(Th_inf, V, mineral_number)
 %   The inclusion class is used to calculate, store and query all kinds
-%   of information about inclusions. A new inclusion is constructed
-%   using obj = inclusion(Th_inf, V, mineral_number), the last being an 
-%   optional input (but asked during construction if omitted). Th_inf 
-%   has to be given in degree Celsius, V in um^3.
-%   The new object will contain nothing but the information provided by
-%   the user at first, but is then be gradually filled with information as
-%   soon as they are queried.
+%   of information about inclusions. A new inclusion object is constructed
+%   using inclusionObject = inclusion(Th_inf, V, mineral_number), the last
+%   being an optional input (but asked during construction if omitted).
+%   Th_inf has to be given in degree Celsius, V in um^3.
+%   The new inclusionObject will contain nothing but the information
+%   provided by the user at first, but is then be gradually filled with
+%   information as soon as they are queried.
 %
 %   Properties:
 %
 %   Th_inf
-%       The nominal homogenization temperatures of the inclusion, in
+%       The nominal homogenisation temperatures of the inclusionObject, in
 %       degree C. This property is set during construction from user
 %       input.
 %   V
-%       The volumes of the inclusion, in um^3. This property is set
+%       The volume of the inclusionObject, in um^3. This property is set
 %       during construction from user input.
 %   mineral
-%       The mineral of the inclusion, i.e. the host type. This
+%       The mineral of the inclusionObject, i.e. the host type. This
 %       property is set during construction from user input or query.
 %   T_pressureMinimum
-%       The temperature at which the internal pressure of the inclusion
-%       is minimal, in degree C.
+%       The temperature at which the internal pressure of the
+%       inclusionObject is minimal, in degree C.
 %   r_pressureMinimum
 %       The radius of the vapour bubble at the pressure minimum, in um.
 %   rho_overall
-%       The mean density of the inclusion at Th_inf, in kg/m^3
+%       The mean density of the inclusionObject at Th_inf, in kg/m^3
 %   T
-%       The "current" temperature(s) of the inclusion, in degree C. This
-%       property is set using inclusion.T = values.
+%       The "current" temperature(s) of the inclusionObject, in degree C.
+%       This property is set using inclusion.T = values.
 %   r
 %       The bubble radii at temperature T, in um.
 %       This property is calculated as soon as it is queried.
@@ -38,7 +38,7 @@
 %       the temperature(s) T, in Pascal.
 %       This property is calculated as soon as it is queried.
 %   rho_overall_at_T
-%       The mean density of the inclusion at the temperature(s) T
+%       The mean density of the inclusionObject at the temperature(s) T
 %   T_sp, T_sp_r
 %       The pro- and retrograde temperatures, respectively, at which 
 %       the vapour bubble becomes unstable, in degree C.
@@ -56,42 +56,44 @@
 %
 %   Methods:
 %
-%   reset(obj)
+%   reset(inclusionObject)
 %       This will clear all the calculated and hence stored values of
 %       the limit temperatures and radii. Those will have to be
 %       recalculated upon the next query. Useful if you changed
 %       something in the underlying programs.
-%   [inclusion, index, R] = errorTolerance(inclusion_array, Th_inf, Th_obs)
-%       This will search through an object array (consisting of objects
-%       of the inclusion class) and return the entry that most closely
-%       matches the Th_inf and Th_obs combination.
-%   [Th_inf, V] = dimensions(obj_array)
+%   [inclusionObject, index, R] = errorTolerance(inclusionObject_array, Th_inf, Th_obs)
+%       This will search through an inclusionObject array (consisting of
+%       objects of the inclusion class) and return the entry that most
+%       closely matches the Th_inf and Th_obs combination.
+%   [Th_inf, V] = dimensions(inclusionObject_array)
 %       This will return the span of Th_inf and V of an array of
-%       objects.
-%   obj_array = insert_Th_inf(obj_array, Th_inf), obj_array = insert_V(obj_array, V), 
+%       inclusionObject.
+%   inclusionObject_array = insert_Th_inf(inclusionObject_array, Th_inf)
+%   inclusionObject_array = insert_V(inclusionObject_array, V)
 %       The array of objects will be expanded so that it will contain
 %       every possible combination of existing and inserted Th_inf and
 %       V. That is, when adding a new, single Th_inf, the resulting 
 %       object will contain a new full row with every combination of
 %       that Th_inf with all preexisting V.
-%   [inclusion, index, R] = find(inclusion_array, Th_inf, V)
-%       This will search through an object array (consisting of objects
-%       of the inclusion class) and return the entry that most closely
-%       matches the Th_inf and V combination.
-%   [inclusion, index, R] = match(inclusion_array, Th_obs, r_obs, Th_obs_is_T_bin, T_obs)
-%       This will search through an object array (consisting of objects
-%       of the inclusion class) and return the entry that most closely
-%       matches the Th_obs and r_obs combination. If T_obs is not given,
-%       r_obs will match r at the pressure minimum, otherwise it will match
-%       r at T_obs.
-%   inclusion = inclusion.get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
+%   [inclusionObject, index, R] = find(inclusionObject_array, Th_inf, V)
+%       This will search through an inclusionObject array (consisting of
+%       objects of the inclusion class) and return the entry that most
+%       closely matches the Th_inf and V combination.
+%   [inclusionObject, index, R] = match(inclusionObject_array, Th_obs, r_obs, Th_obs_is_T_bin, T_obs)
+%       This will search through an inclusionObject array (consisting of
+%       objects of the inclusion class) and return the entry that most
+%       closely matches the Th_obs and r_obs combination. If T_obs is not
+%       given, r_obs will match r at the pressure minimum, otherwise it
+%       will match r at T_obs.
+%   inclusionObject = inclusion.get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 %       If you want an exact match (instead of an approximate one, see
-%       above) use this function. It will calculate the inclusion that fits
-%       the Th_obs and r_obs combination within a tolerance of 0.01 for
-%       both values. If T_obs is not given, r_obs will match r at the
-%       pressure minimum, otherwise it will match r at T_obs. Th_inf and V
-%       are start values for the iteration. You can use match() (see above)
-%       to calculate them, it will speed up the process by a few seconds.
+%       above) use this function. It will calculate the inclusionObject
+%       that fits the Th_obs and r_obs combination within an absolute
+%       tolerance of 0.01 for both values. If T_obs is not given, r_obs
+%       will match r at the pressure minimum, otherwise it will match r at
+%       T_obs. Th_inf and V are start values for the iteration. You can use
+%       match() (see above) to calculate them, it will speed up the process
+%       by a few seconds.
 
 classdef inclusion < hgsetget
     
