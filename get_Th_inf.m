@@ -1,13 +1,15 @@
 %get_Th_inf  Calculate Th_inf from Th_obs and r_obs
 %
 % inclusionObject = 
-%              get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, Th_inf, V)
+%              get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 %
 % Calculates the nominal homogenisation temperature and the volume of a
 % fluid inclusion
 %   Th_obs: Th_obs of the inclusion (in C)
 %   r_obs: r_obs of the inclusion (in um)
 %   Th_obs_is_T_bin: Whether Th_obs corresponds to T_bin (1 or 0)
+%   T_obs: The temperature r_obs was measured at (in C)
+%   mineralNumber: The mineralNumber of the inclusion
 %   Th_inf: The initial guess for Th_inf (in C)
 %   V: The initial guess for V (in um^3)
 % All arguments are mandatory
@@ -16,14 +18,17 @@
 % desired values.
 %
 
-function inclusionObject = get_Th_inf(Th_obs, r_obs, mineralNumber, Th_obs_is_T_bin, Th_inf, V)
+function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 
 if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
-if nargin < 5
-	if nargin < 4
-		if nargin < 3; Th_obs_is_T_bin = 0; end
+if nargin < 6
+	if nargin < 5
 		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
+        if nargin < 4
+    		if nargin < 3; Th_obs_is_T_bin = 0; end
+            T_obs = T_pressureMinimum;
+        end
 	else
 		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
 	end
@@ -47,13 +52,14 @@ for Th_obs_ctr = length(Th_obs):-1:1
     iterationCounter = 0;
 
     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-
+    inclusionObject(Th_obs_ctr).T = T_obs;
+    radius_out_corrected = inclusionObject(Th_obs_ctr).r;
+    
     if Th_obs_is_T_bin
         Th_obs_calculated = inclusionObject(Th_obs_ctr).T_bin;
     else
         Th_obs_calculated = inclusionObject(Th_obs_ctr).T_sp;
     end;
-    radius_out_corrected = inclusionObject(Th_obs_ctr).r_pressureMinimum;
 
     Th_inf_step = -1;
     V_step = -V(Th_obs_ctr)*1e-3;
@@ -88,12 +94,14 @@ for Th_obs_ctr = length(Th_obs):-1:1
             while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
 
                 inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
+                inclusionObject(Th_obs_ctr).T = T_obs;
+                radius_out_corrected = inclusionObject(Th_obs_ctr).r;
+                
                 if Th_obs_is_T_bin
                     Th_obs_calculated = inclusionObject(Th_obs_ctr).T_bin;
                 else
                     Th_obs_calculated = inclusionObject(Th_obs_ctr).T_sp;
                 end;
-                radius_out_corrected = inclusionObject(Th_obs_ctr).r_pressureMinimum;
 
                 if isnan(Th_obs_calculated)
                     if sign(Th_inf_step) == 1;
@@ -143,12 +151,14 @@ for Th_obs_ctr = length(Th_obs):-1:1
             while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
 
                 inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
+                inclusionObject(Th_obs_ctr).T = T_obs;
+                radius_out_corrected = inclusionObject(Th_obs_ctr).r;
+                
                 if Th_obs_is_T_bin
                     Th_obs_calculated = inclusionObject(Th_obs_ctr).T_bin;
                 else
                     Th_obs_calculated = inclusionObject(Th_obs_ctr).T_sp;
                 end;
-                radius_out_corrected = inclusionObject(Th_obs_ctr).r_pressureMinimum;
 
                 if isnan(Th_obs_calculated);
                     if sign(V_step) == 1;
@@ -187,12 +197,14 @@ for Th_obs_ctr = length(Th_obs):-1:1
             Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
 
             inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
+            inclusionObject(Th_obs_ctr).T = T_obs;
+            radius_out_corrected = inclusionObject(Th_obs_ctr).r;
+            
             if Th_obs_is_T_bin
                 Th_obs_calculated = inclusionObject(Th_obs_ctr).T_bin;
             else
                 Th_obs_calculated = inclusionObject(Th_obs_ctr).T_sp;
             end;
-            radius_out_corrected = inclusionObject(Th_obs_ctr).r_pressureMinimum;
 
             % If one of the two is NaN here, we have to redo the whole thing,
             % since the combination of the two new values doesn't work.
