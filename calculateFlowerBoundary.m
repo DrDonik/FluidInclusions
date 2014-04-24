@@ -1,12 +1,7 @@
-% Th_obs_is_T_bin has to be set either to true (or 1, the default) for bin or to false
-% (or 0) for sp.
-
-function obj = calculateFlowerBoundary(obj, Th_obs_is_T_bin)
+function obj = calculateFlowerBoundary(obj)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
-
-if nargin == 1; Th_obs_is_T_bin = 1; end;
 
 % The fit options. Usually the fit converges after less than 50 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
@@ -22,26 +17,26 @@ rc = 1.1808741e-8;
 b = -0.625;
 mu = 1.256;
 
-step = 1.25;
-Th_inf_working = 20 + 273.15;
+step = 5;
+Th_inf_working = 20 + obj.store_T_pressureMinimum;
 
-while step >= 0.002/5^5
+while step >= 5/5^10
 
-    gm_out_corrected = 1;
+    minvars_corrected = 1;
 
-    while gm_out_corrected > 1e-9
+    while minvars_corrected(1) > 1e-9
 
         Th_inf_working = Th_inf_working - step;
         while Th_inf_working <= obj.store_T_pressureMinimum
             step = step/5;
-            Th_inf_working = obj.store_T_pressureMinimum + step;
+            Th_inf_working = obj.store_T_pressureMinimum + 4*step;
         end;
 
         rhoOverallInitial = inclusion.liqvap_density(Th_inf_working)*1000;
 
         % Apply the volume correction
         [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_working);
-        rho_overall_at_T = rhoOverallInitial*((1-(reftemp-Th_inf_working+273.15)*alpha_V)/(1-(reftemp-obj.store_T_pressureMinimum+273.15)*alpha_V));
+        rho_overall_at_T = rhoOverallInitial*(1-(reftemp-Th_inf_working+273.15)*alpha_V)/(1-(reftemp-obj.store_T_pressureMinimum+273.15)*alpha_V);
         dm = rho_overall_at_T/rhoc;
 
         % Calculate the surface tension
@@ -60,20 +55,15 @@ while step >= 0.002/5^5
         % Make an initial estimate using IAPWS-95, pretending there was no
         % surface tension. These values will be larger, but close to the
         % final values.
-        minvars_corrected(1) = (1 - rho_overall_at_T/1000/inclusion.liqvap_density(obj.store_T_pressureMinimum));
+        minvars_corrected(1) = 1 - rho_overall_at_T/1000/inclusion.liqvap_density(obj.store_T_pressureMinimum);
         minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.store_T_pressureMinimum)/rhoc*1000;
 
         if minvars_corrected(1) > 0
             % Minimise the helmholtz energy
             minvars_corrected = fmincon(helmholtz_function, minvars_corrected, [],[],[],[],[0 0],[1 Inf],[],options);
         else
+			minvars_corrected(1) = 1;
             continue;
-        end;
-
-        if Th_obs_is_T_bin && helmholtz_function(minvars_corrected) > helmholtz_function([0, minvars_corrected(2)])
-            gm_out_corrected = 0;
-        else
-            gm_out_corrected = minvars_corrected(1);
         end;
 
     end;
