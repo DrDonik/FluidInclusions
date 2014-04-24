@@ -461,7 +461,7 @@ classdef inclusion < hgsetget
                 obj.store_flowerBoundary = calculateFlowerBoundary(obj, 0);
             end
             
-            value = obj.store_flowerBoundary;
+            value = obj.store_flowerBoundary-273.15;
         end
         
         function value = get.T_sp(obj)
