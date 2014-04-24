@@ -429,8 +429,7 @@ classdef inclusion < hgsetget
                 end
             end
         end
-
-        
+			
         %% Set and Get methods
         
         %% Methods for properties that will not change with temperature T
@@ -458,7 +457,7 @@ classdef inclusion < hgsetget
         
         function value = get.flowerBoundary(obj)
             if isempty(obj.store_flowerBoundary)
-                obj.store_flowerBoundary = calculateFlowerBoundary(obj, 0);
+                obj = calculateFlowerBoundary(obj, 0);
             end
             
             value = obj.store_flowerBoundary-273.15;
@@ -634,7 +633,7 @@ classdef inclusion < hgsetget
 
         function value = get.r(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_r) || ~all(obj.store_r))
-                get_r(obj);
+                obj = get_r(obj);
             end
             
             value = obj.store_r;
@@ -662,13 +661,16 @@ classdef inclusion < hgsetget
 
         function value = get.p_v(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_v) || ~all(obj.store_p_v))
-                partPressure(obj);
+                obj = partPressure(obj);
            end
             
             value = obj.store_p_v;
         end
 		
-        %% Methods saved in files in the @inclusion folder
+	end
+	
+	methods (Access = protected)
+		%% Methods saved in files in the @inclusion folder
         
         [reftemp, alpha_V] = expansion_coeff(obj, T)
         obj = get_r(obj)
@@ -679,12 +681,15 @@ classdef inclusion < hgsetget
     end
     
     methods (Static)
-	    %% static methods of the class
+	    %% static methods
 		
 		obj = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
+		
+	end
 	
-        %% static helper methods
-
+	methods (Static, Access = protected)
+		%% static helper methods
+		
         coeffs = readIAPWS95data()
 		[mineralNumber, pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
 		rho = liqvap_density(T)

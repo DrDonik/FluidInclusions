@@ -1,19 +1,19 @@
 % Th_obs_is_T_bin has to be set either to true (or 1, the default) for bin or to false
 % (or 0) for sp.
 
-function [Th_inf_working, r] = calculateFlowerBoundary(obj, Th_obs_is_T_bin)
+function obj = calculateFlowerBoundary(obj, Th_obs_is_T_bin)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
 
 if nargin == 1; Th_obs_is_T_bin = 1; end;
 
-% The fit options. Usually the fit converges after less than 10 iterations,
+% The fit options. Usually the fit converges after less than 50 iterations,
 % if it doesn't there will be no minimum. The GradObj-entry tells the fit
 % routine to take the Jacobian into account.
 TolX = 1e-13;
 TolFun = 1e-15;
-options = optimset('TolX',TolX,'TolFun',TolFun,'GradObj','on','Hessian','user-supplied','Algorithm','trust-region-reflective','Display','off','MaxIter',10);
+options = optimset('TolX',TolX,'TolFun',TolFun,'GradObj','on','Hessian','user-supplied','Algorithm','trust-region-reflective','Display','off','MaxIter',50);
 
 % Some constants
 rhoc = 322;
@@ -83,6 +83,6 @@ while step >= 0.002/5^5
 
 end
 
-r = (3 * obj.store_V * gm_out_corrected / (4 * pi))^(1/3)*1e6;
+obj.store_flowerBoundary = Th_inf_working;
 
 return
