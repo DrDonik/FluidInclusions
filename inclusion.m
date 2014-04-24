@@ -128,16 +128,17 @@ classdef inclusion < hgsetget
         r               % The radius of the vapour bubble at temperature(s) T, in um
 
         T_sp            % The temperature at which the bubble becomes unstable, in degree C
+	end
+	
+    properties (Dependent, SetAccess = protected, Hidden)	
         r_sp            % The radius of the vapour bubble at T_sp, in um
         T_sp_r          % The retrograde temperature at which the bubble becomes unstable, in degree C
         r_sp_r          % The radius of the vapour bubble at T_sp_r, in um
-        T_bin           % The temperature at which the bubble becomes metastable, in degree C
-        r_bin           % The radius of the vapour bubble at T_bin, in um
+	    T_bin           % The temperature at which the bubble becomes metastable, in degree C
+	    r_bin           % The radius of the vapour bubble at T_bin, in um
         T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in degree C
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
-    end
-    
-    properties (Dependent, SetAccess = protected, Hidden)
+
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
         

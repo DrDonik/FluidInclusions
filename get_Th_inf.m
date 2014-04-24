@@ -257,14 +257,14 @@ for Th_obs_ctr = length(Th_obs):-1:1
 
         if abs(Th_inf_step/Th_inf(Th_obs_ctr)) < tolerance/100 && ...
                 abs(V_step/V(Th_obs_ctr)) < tolerance/100;
-            disp('Relative step size in Th_inf and V smaller than 1% of tolerance');
+            disp(['Relative step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
             iterationCounter = 13; % There shall be no "too many iterations"-message
             break;
         end
 
         if abs(Th_obs_calculated - Th_obs(Th_obs_ctr)) < tolerance && ...
             abs(radius_out_corrected - r_obs(Th_obs_ctr)) < tolerance
-            disp('Deviation of Th_obs and r_obs smaller than tolerance');
+            disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
             iterationCounter = 13; % There shall be no "too many iterations"-message
             break;
         end;
