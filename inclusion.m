@@ -457,7 +457,7 @@ classdef inclusion < hgsetget
         
         function value = get.flowerBoundary(obj)
             if isempty(obj.store_flowerBoundary)
-                obj = calculateFlowerBoundary(obj, 0);
+                obj = calculateFlowerBoundary(obj);
             end
             
             value = obj.store_flowerBoundary-273.15;
@@ -674,7 +674,7 @@ classdef inclusion < hgsetget
         
         [reftemp, alpha_V] = expansion_coeff(obj, T)
         obj = get_r(obj)
-		[Th_inf, r] = calculateFlowerBoundary(obj, Th_obs_is_T_bin)
+		[Th_inf, r] = calculateFlowerBoundary(obj)
 		[T_boundary, r_boundary] = get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
 		obj = partPressure(obj)
 
