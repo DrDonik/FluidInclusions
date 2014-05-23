@@ -255,9 +255,9 @@ for Th_obs_ctr = length(Th_obs):-1:1
         Th_inf_step = next_step_vec(1);
         V_step = next_step_vec(2);
 
-        if abs(Th_inf_step/Th_inf(Th_obs_ctr)) < tolerance/100 && ...
-                abs(V_step/V(Th_obs_ctr)) < tolerance/100;
-            disp(['Relative step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
+        if abs(Th_inf_step) < tolerance/100 && ...
+                abs(V_step) < tolerance/100;
+            disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
             iterationCounter = 13; % There shall be no "too many iterations"-message
             break;
         end
