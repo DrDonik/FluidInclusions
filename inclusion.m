@@ -618,7 +618,7 @@ classdef inclusion < hgsetget
                     obj.store_rho_overall_at_T(T_ctr) = temp_store_rho_overall_at_T(index);
                 elseif value(T_ctr) > obj.store_Th_inf
                     obj.store_r(T_ctr) = NaN;                                   
-                    obj.store_p_l(T_ctr) = NaN;
+                    obj.store_p_l(T_ctr) = 0;
                     obj.store_p_v(T_ctr) = NaN;
                     obj.store_rho_overall_at_T(T_ctr) = 0;
                 end
