@@ -19,9 +19,7 @@ for T_ctr = find(obj.store_p_l==0)
         obj.store_p_v(T_ctr) = NaN;
         
     else
-        P0 = saturationPressure(obj.store_T(T_ctr));
-        rho_liquid = inclusion.liqvap_density(obj.store_T(T_ctr));
-        rho_vapour = inclusion.liqvap_density_vapour(obj.store_T(T_ctr));
+        [P0, rho_liquid, rho_vapour] = saturationPressure(obj.store_T(T_ctr));
 
         delta_P = 2*inclusion.surface_tension(obj.store_T(T_ctr))/(obj.r(T_ctr)/1e6);
 
