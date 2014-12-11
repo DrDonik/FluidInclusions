@@ -89,7 +89,7 @@ while step >= tolerance
         
         % Apply the volume correction
         [reftemp, alpha_V] = expansion_coeff(obj, T_boundary_working);
-        rho_overall_at_T = obj.rho_overall*((1-(reftemp-obj.store_Th_inf+273.15)*alpha_V)/(1-(reftemp-T_boundary_working+273.15)*alpha_V));
+        rho_overall_at_T = obj.rho_overall*((1-(reftemp-obj.store_Th_inf)*alpha_V)/(1-(reftemp-T_boundary_working)*alpha_V));
         dm = rho_overall_at_T/rhoc;
         
         % Calculate the surface tension

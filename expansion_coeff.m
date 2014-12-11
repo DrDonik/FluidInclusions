@@ -1,7 +1,8 @@
 function [reftemp, alpha_V] = expansion_coeff(obj, T)
 
-%The formulas are for T in °C. I expect the argument T given in K
-%go to °C
+% I expect the argument T given in K
+
+% The formulas are for T in degree C. Convert to degree C
 T = T - 273.15;
 
 switch obj.mineralNumber 
@@ -52,5 +53,9 @@ switch obj.mineralNumber
         alpha_V = zeros(size(T));
 
 end;
+
+% inclusion class is all in K internally, so go back to K with reftemp
+
+reftemp = reftemp + 273.15;
 
 return;

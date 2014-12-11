@@ -667,8 +667,8 @@ classdef inclusion < hgsetget
                 [reftemp, alpha_V] = expansion_coeff(obj, obj.store_T(obj.store_rho_overall_at_T == 0));
 
                 obj.store_rho_overall_at_T(obj.store_rho_overall_at_T == 0) = ...
-                   obj.rho_overall * ((1-(reftemp-obj.store_Th_inf+273.15)*alpha_V) ./ ...
-                   (1-(reftemp+273.15-obj.store_T(obj.store_rho_overall_at_T == 0)).*alpha_V));
+                   obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
+                   (1-(reftemp-obj.store_T(obj.store_rho_overall_at_T == 0)).*alpha_V));
             end
             
             value = obj.store_rho_overall_at_T;

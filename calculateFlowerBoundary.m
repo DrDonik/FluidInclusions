@@ -36,7 +36,7 @@ while step >= 5/5^10
 
         % Apply the volume correction
         [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_working);
-        rho_overall_at_T = rhoOverallInitial*(1-(reftemp-Th_inf_working+273.15)*alpha_V)/(1-(reftemp-obj.store_T_pressureMinimum+273.15)*alpha_V);
+        rho_overall_at_T = rhoOverallInitial*(1-(reftemp-Th_inf_working)*alpha_V)/(1-(reftemp-obj.store_T_pressureMinimum)*alpha_V);
         dm = rho_overall_at_T/rhoc;
 
         % Calculate the surface tension
