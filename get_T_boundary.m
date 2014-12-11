@@ -109,7 +109,7 @@ while step >= tolerance
         % surface tension. These values will be larger, but close to the
         % final values.
 	    [~, minvars_corrected(1), minvars_corrected(2)] = saturationPressure(T_boundary_working);
-		minvars_corrected(1) = 1 - rho_overall_at_T/minvars_corrected(1)
+		minvars_corrected(1) = 1 - rho_overall_at_T/minvars_corrected(1);
         minvars_corrected(2) = minvars_corrected(2)/rhoc;
         
         if minvars_corrected(1) > 0

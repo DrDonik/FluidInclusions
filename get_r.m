@@ -32,7 +32,7 @@ for T_ctr = find(obj.store_r == 0)
     % surface tension. These values will be larger, but close to the
     % final values.
     [~, minvars_corrected(1), minvars_corrected(2)] = saturationPressure(obj.store_T(T_ctr));
-	minvars_corrected(1) = 1 - obj.rho_overall_at_T(T_ctr)/minvars_corrected(1)
+	minvars_corrected(1) = 1 - obj.rho_overall_at_T(T_ctr)/minvars_corrected(1);
     minvars_corrected(2) = minvars_corrected(2)/rhoc;
 
     % Calculate the surface tension
