@@ -138,6 +138,8 @@ classdef inclusion < hgsetget
 	    r_bin           % The radius of the vapour bubble at T_bin, in um
         T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in degree C
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
+        
+        Th_inf_r        % The retrograde Th_inf, in degree C
 
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
@@ -165,8 +167,10 @@ classdef inclusion < hgsetget
         store_T_bin     % The temperature at which the bubble becomes metastable, in K
         store_r_bin     % The radius of the vapour bubble at T_bin, in um
         store_T_bin_r   % The retrograde temperature at which the bubble becomes metastable, in K
-        store_r_bin_r   % The radius of the vapour bubble at T_bin_r, in um    
+        store_r_bin_r   % The radius of the vapour bubble at T_bin_r, in um
 
+        store_Th_inf_r  % The retrograde Th_inf, in K
+        
         store_T         % The "current" temperature(s) of the inclusion, in K
         store_r         % The radius of the vapour bubble at temperature(s) T, in um
         store_p_l       % The liquid pressure at temperature(s) T, in Pa
@@ -175,12 +179,10 @@ classdef inclusion < hgsetget
         store_flowerBoundary         % The minimum necessary Th_inf for this volume so that a bubble is possible
     end
     
-    %% Methods
     
+    %% The constructor method
     methods
-        
-        %% The constructor method
-        
+    
         function obj = inclusion(Th_inf, V, mineralNumber)
 
             if nargin == 0;
@@ -210,7 +212,10 @@ classdef inclusion < hgsetget
             
         end
         
-        %% Special functions
+    end
+    
+    %% Reset function
+    methods
         
         function reset(obj)
             % This is used the clear all the calculated limit temperatures 
@@ -225,6 +230,11 @@ classdef inclusion < hgsetget
             obj.store_T_bin_r = [];
             obj.store_r_bin_r = [];
         end
+        
+    end
+    
+    %% Methods for array handling
+    methods
         
         function [obj, index, R] = find(obj_array, Th_inf, V)
             % This will return the indices of the inclusion that most
@@ -430,12 +440,21 @@ classdef inclusion < hgsetget
             end
         end
 			
-        %% Set and Get methods
-        
-        %% Methods for properties that will not change with temperature T
+    end
+
+    
+    %% Set and Get methods for properties that will not change with temperature T
+    methods
         
         function value = get.Th_inf(obj)
             value = obj.store_Th_inf - 273.15;
+        end
+        
+        function value = get.Th_inf_r(obj)
+            if isempty(obj.store_Th_inf_r)
+                obj.store_Th_inf_r = NaN;
+            end
+            value = obj.store_Th_inf_r - 273.15;
         end
         
         function value = get.V(obj)
@@ -567,7 +586,11 @@ classdef inclusion < hgsetget
             value = obj.store_r_bin_r;
         end
         
-        %% Methods for properties that change with temperature T
+    end
+
+
+    %% Set and Get methods for properties that change with temperature T
+    methods
         
         function set.T(obj, value)
             % Whenever the user assigns new "current" temperatures, we have
@@ -667,10 +690,10 @@ classdef inclusion < hgsetget
             value = obj.store_p_v;
         end
 		
-	end
+    end
 	
+    %% Methods saved in files in the @inclusion folder
 	methods (Access = protected)
-		%% Methods saved in files in the @inclusion folder
         
         [reftemp, alpha_V] = expansion_coeff(obj, T)
         obj = get_r(obj)
@@ -680,15 +703,15 @@ classdef inclusion < hgsetget
 
     end
     
+    %% static methods
     methods (Static)
-	    %% static methods
 		
 		obj = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 		
 	end
 	
-	methods (Static, Access = protected)
-		%% static helper methods
+	%% static helper methods
+    methods (Static, Access = protected)
 		
         coeffs = readIAPWS95data()
 		[mineralNumber, pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
