@@ -452,7 +452,12 @@ classdef inclusion < hgsetget
         
         function value = get.Th_inf_r(obj)
             if isempty(obj.store_Th_inf_r)
-                obj.store_Th_inf_r = NaN;
+                
+                p_diff = @(Th_inf_r_working) calc_p_diff(obj, Th_inf_r_working);
+                Th_inf_r_working = [2*(5.15 + 273.15) - obj.Th_inf obj.T_sp_r-0.05];
+
+                obj.store_Th_inf_r = fzero(p_diff, Th_inf_r_working);
+
             end
             value = obj.store_Th_inf_r - 273.15;
         end
@@ -690,6 +695,25 @@ classdef inclusion < hgsetget
             value = obj.store_p_v;
         end
 		
+    end
+    
+    %% Helper methods
+    methods (Access = protected)
+        
+        function p_diff = calc_p_diff(obj, Th_inf_r_working)
+           [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
+
+           rho_overall_at_Th_r_working = ...
+              obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
+              (1-(reftemp-Th_inf_r_working).*alpha_V));
+
+           p_sat = saturationPressure(Th_inf_r_working);
+           p_iso_Th = pressure(rho_overall_at_Th_r_working, Th_inf_r_working);
+           
+           p_diff = p_sat - p_iso_Th;
+           return
+        end
+        
     end
 	
     %% Methods saved in files in the @inclusion folder
