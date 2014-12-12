@@ -27,18 +27,6 @@
 %       The radius of the vapour bubble at the pressure minimum, in um.
 %   rho_overall
 %       The mean density of the inclusionObject at Th_inf, in kg/m^3
-%   T
-%       The "current" temperature(s) of the inclusionObject, in degree C.
-%       This property is set using inclusion.T = values.
-%   r
-%       The bubble radii at temperature T, in um.
-%       This property is calculated as soon as it is queried.
-%   p_l, p_v
-%       The pressures of the liquid and vapour phase, respectively, at
-%       the temperature(s) T, in Pascal.
-%       This property is calculated as soon as it is queried.
-%   rho_overall_at_T
-%       The mean density of the inclusionObject at the temperature(s) T
 %   T_sp, T_sp_r
 %       The pro- and retrograde temperatures, respectively, at which 
 %       the vapour bubble becomes unstable, in degree C.
@@ -53,6 +41,22 @@
 %   r_bin, r_bin_r
 %       The radiii of the vapour bubble at T_bin and T_bin_r, in um.
 %       This property is calculated as soon as it is queried.
+%   Th_inf_r
+%       The retrograde Th_inf, where the iso-Th-curve crosses the
+%       saturation curve, in degree C.
+%       This property is calculated as soon as it is queried.
+%   T
+%       The "current" temperature(s) of the inclusionObject, in degree C.
+%       This property is set using inclusion.T = values.
+%   r
+%       The bubble radii at temperature T, in um.
+%       This property is calculated as soon as it is queried.
+%   p_l, p_v
+%       The pressures of the liquid and vapour phase, respectively, at
+%       the temperature(s) T, in Pascal.
+%       This property is calculated as soon as it is queried.
+%   rho_overall_at_T
+%       The mean density of the inclusionObject at the temperature(s) T
 %
 %   Methods:
 %
