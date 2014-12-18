@@ -25,7 +25,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
 if nargin < 6
-	if nargin < 5
+    if nargin < 5
 		[mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
         if nargin < 4
     		if nargin < 3; Th_obs_is_T_bin = 0; end;
@@ -83,7 +83,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
 
     while iterationCounter < 12
         
-        iterationCounter = iterationCounter + 1
+        iterationCounter = iterationCounter + 1;
 
         Th_obs_calculated_old = Th_obs_calculated;
         radius_out_corrected_old = radius_out_corrected;
@@ -274,7 +274,7 @@ for Th_obs_ctr = length(Th_obs):-1:1
         end;
 
         % The vectorised version of the function looks as follows
-        F_vec = [radius_out_corrected; Th_obs_calculated]
+        F_vec = [radius_out_corrected; Th_obs_calculated];
 
         % The next step should take us to a better guess and will be calculated
         % using Newton's method
