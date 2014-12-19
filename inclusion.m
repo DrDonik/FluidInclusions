@@ -45,6 +45,9 @@
 %       The retrograde Th_inf, where the iso-Th-curve crosses the
 %       saturation curve, in degree C.
 %       This property is calculated as soon as it is queried.
+%   flowerBoundary
+%       The minimal Th_inf for this inclusion volume to still be able to
+%       nucleate a bubble.
 %   T
 %       The "current" temperature(s) of the inclusionObject, in degree C.
 %       This property is set using inclusion.T = values.
