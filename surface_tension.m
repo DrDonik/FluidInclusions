@@ -3,10 +3,13 @@
 
 function sigma = surface_tension(T)
 
-Tc  =  647.096;
-tau =  1-T/Tc;
-B   =  0.2358;
-b   = -0.625;
-mu  =  1.256;
+    Tc  =  647.096;
+    tau =  1-T/Tc;
+    B   =  0.2358;
+    b   = -0.625;
+    mu  =  1.256;
 
-sigma = B*tau.^mu.*(1+b.*tau);
+    sigma = B*tau.^mu.*(1+b.*tau);
+    
+    return
+end

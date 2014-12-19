@@ -3,7 +3,7 @@
 function [mineralNumber, T_pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
     
     if nargin == 0 || isempty(mineralNumber)
-        if ~usejava('desktop');
+        if ~usejava('desktop')
             mineral_list = ['1: Calcite, reference T = 30°, Rao\n', ...
                 '2: Calcite, reference T = 20° Rao, Maximum Density at 5.15 °C\n', ...
                 '3: Calcite, reference T = 20°, TPPM, Maximum Density at 4.65 °C\n', ...
@@ -13,7 +13,7 @@ function [mineralNumber, T_pressureMinimum, mineral] = set_fi_mineral(mineralNum
                 '7: No correction'];
             mineralNumber = input(['Select a Mineral (invoke set_fi_mineral to change it later):\n', mineral_list, ...
                 '\nEnter the number corresponding to the mineral you want [7]: ']);
-            if isempty(mineralNumber); mineralNumber = 7; end
+            if isempty(mineralNumber); mineralNumber = 7; end;
         else
             mineral_list = {'Calcite, reference T = 30°, Rao', ...
                 'Calcite, reference T = 20° Rao, Maximum Density at 5.15 °C', ...
@@ -23,7 +23,7 @@ function [mineralNumber, T_pressureMinimum, mineral] = set_fi_mineral(mineralNum
                 'Gypsum, reference T = 19.4° Schofield, Maximum Density at 8.35 °C', ...
                 'No correction'};
             [mineralNumber,isok] = listdlg('PromptString','Select a Mineral (invoke set_fi_mineral to change it later):','SelectionMode','single','ListSize',[500,200],'ListString',mineral_list);
-            if ~isok; mineralNumber = 7; end
+            if ~isok; mineralNumber = 7; end;
         end
     end
     
@@ -37,4 +37,5 @@ function [mineralNumber, T_pressureMinimum, mineral] = set_fi_mineral(mineralNum
         case 7; T_pressureMinimum = 4.00 + 273.15; mineral = 'No correction';
     end
 
-return
+    return
+end
