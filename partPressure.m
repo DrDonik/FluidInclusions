@@ -2,7 +2,7 @@
 % liquid and the vapour phase. If there is no bubble possible, the function
 % returns the pressure on the iso-Th-curve
 
-function obj = partPressure(obj)
+function partPressure(obj)
 
 for T_ctr = find(obj.store_p_l==0)
     
@@ -18,4 +18,6 @@ for T_ctr = find(obj.store_p_l==0)
         obj.store_p_l(T_ctr) = P0 - rho_liquid/(rho_liquid - rho_vapour)*delta_P;
         obj.store_p_v(T_ctr) = P0 - rho_vapour/(rho_liquid - rho_vapour)*delta_P;
     end;
-end
+end;
+
+return;
