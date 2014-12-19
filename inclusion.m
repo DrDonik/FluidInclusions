@@ -132,14 +132,14 @@ classdef inclusion < hgsetget
         r               % The radius of the vapour bubble at temperature(s) T, in um
 
         T_sp            % The temperature at which the bubble becomes unstable, in degree C
-	end
+    end
 	
     properties (Dependent, SetAccess = protected, Hidden)	
         r_sp            % The radius of the vapour bubble at T_sp, in um
         T_sp_r          % The retrograde temperature at which the bubble becomes unstable, in degree C
         r_sp_r          % The radius of the vapour bubble at T_sp_r, in um
-	    T_bin           % The temperature at which the bubble becomes metastable, in degree C
-	    r_bin           % The radius of the vapour bubble at T_bin, in um
+        T_bin           % The temperature at which the bubble becomes metastable, in degree C
+        r_bin           % The radius of the vapour bubble at T_bin, in um
         T_bin_r         % The retrograde temperature at which the bubble becomes metastable, in degree C
         r_bin_r         % The radius of the vapour bubble at T_bin_r, in um
         
@@ -323,7 +323,7 @@ classdef inclusion < hgsetget
                     decision = input('Do you want me to calculate all missing values? [y/N]: ', 's');
                     if strcmp(decision,'y') || strcmp(decision,'Y') || strcmp(decision,'yes') || strcmp(decision,'Yes') || strcmp(decision,'YES')
                         set(obj_array,'T',T_obs);
-						logical_indices = true(size(obj_array));
+                        logical_indices = true(size(obj_array));
                     else
                         obj = [];
                         R = [];
@@ -336,7 +336,7 @@ classdef inclusion < hgsetget
                     
                     if strcmp(decision,'y') || strcmp(decision,'Y') || strcmp(decision,'yes') || strcmp(decision,'Yes') || strcmp(decision,'YES')
                         set(obj_array,'T',T_obs);
-						logical_indices = true(size(obj_array));
+                        logical_indices = true(size(obj_array));
                     else
                         disp('Your match will probably not be correct.')
                     end
@@ -665,7 +665,7 @@ classdef inclusion < hgsetget
 
         function value = get.r(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_r) || ~all(obj.store_r))
-                obj = get_r(obj);
+                get_r(obj);
             end
             
             value = obj.store_r;
@@ -693,7 +693,7 @@ classdef inclusion < hgsetget
 
         function value = get.p_v(obj)
             if ~isempty(obj.store_T) && (isempty(obj.store_p_v) || ~all(obj.store_p_v))
-                obj = partPressure(obj);
+                partPressure(obj);
            end
             
             value = obj.store_p_v;
@@ -721,30 +721,30 @@ classdef inclusion < hgsetget
     end
 	
     %% Methods saved in files in the @inclusion folder
-	methods (Access = protected)
+    methods (Access = protected)
         
         [reftemp, alpha_V] = expansion_coeff(obj, T)
-        obj = get_r(obj)
-		[Th_inf, r] = calculateFlowerBoundary(obj)
-		[T_boundary, r_boundary] = get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
-		obj = partPressure(obj)
+        get_r(obj)
+        [Th_inf, r] = calculateFlowerBoundary(obj)
+        [T_boundary, r_boundary] = get_T_boundary(obj, calc_sp_boundary, calc_prograde_boundary)
+        partPressure(obj)
 
     end
     
     %% static methods
     methods (Static)
 		
-		obj = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
+        obj = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 		
-	end
+    end
 	
-	%% static helper methods
+    %% static helper methods
     methods (Static, Access = protected)
 		
         coeffs = readIAPWS95data()
-		[mineralNumber, pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
-		rho = liqvap_density(T)
-		rho = liqvap_density_vapour(T)
+        [mineralNumber, pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
+        rho = liqvap_density(T)
+        rho = liqvap_density_vapour(T)
         sigma = surface_tension(T)
                 
     end
