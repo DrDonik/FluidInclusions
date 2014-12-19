@@ -221,6 +221,71 @@ classdef inclusion < matlab.mixin.SetGet
         
     end
     
+    %% Methods to display the values
+    methods
+        
+        function objProperties = getdisp(obj)
+            % This will display all the properties that have been
+            % calculated up to now.
+            
+            % set up the struct to display
+            objProperties = struct;
+            
+            objProperties.Th_inf = obj.Th_inf;
+            if ~isempty(obj.store_Th_inf_r); objProperties.Th_inf_r = obj.Th_inf_r; end;
+            objProperties.V = obj.V;
+            objProperties.mineral = obj.mineral;
+            if ~isempty(obj.store_flowerBoundary); objProperties.flowerBoundary = obj.flowerBoundary; end;
+            objProperties.T_pressureMinimum = obj.T_pressureMinimum;
+            objProperties.r_pressureMinimum = obj.r_pressureMinimum;
+            if ~isempty(obj.store_T_sp)
+                objProperties.T_sp = obj.T_sp;
+                objProperties.r_sp = obj.r_sp;
+            end
+            if ~isempty(obj.store_T_sp_r)
+                objProperties.T_sp_r = obj.T_sp_r;
+                objProperties.r_sp_r = obj.r_sp_r;
+            end
+            if ~isempty(obj.store_T_bin)
+                objProperties.T_bin = obj.T_bin;
+                objProperties.r_bin = obj.r_bin;
+            end
+            if ~isempty(obj.store_T_bin_r)
+                objProperties.T_bin_r = obj.T_bin_r;
+                objProperties.r_bin_r = obj.r_bin_r;
+            end
+            
+            disp(objProperties);
+
+        end
+        
+        
+        function objProperties = getall(obj)
+            % This will calculate all the properties and display them.
+            
+            % set up the struct to display
+            objProperties = struct;
+            
+            objProperties.Th_inf = obj.Th_inf;
+            objProperties.Th_inf_r = obj.Th_inf_r;
+            objProperties.V = obj.V;
+            objProperties.mineral = obj.mineral;
+            objProperties.flowerBoundary = obj.flowerBoundary;
+            objProperties.T_pressureMinimum = obj.T_pressureMinimum;
+            objProperties.r_pressureMinimum = obj.r_pressureMinimum;
+            objProperties.T_sp = obj.T_sp;
+            objProperties.r_sp = obj.r_sp;
+            objProperties.T_sp_r = obj.T_sp_r;
+            objProperties.r_sp_r = obj.r_sp_r;
+            objProperties.T_bin = obj.T_bin;
+            objProperties.r_bin = obj.r_bin;
+            objProperties.T_bin_r = obj.T_bin_r;
+            objProperties.r_bin_r = obj.r_bin_r;
+            
+        end
+        
+    end
+    
     %% Reset function
     methods
         
