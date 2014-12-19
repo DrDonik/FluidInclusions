@@ -6,7 +6,7 @@
 
 % I expect T to be in K
 
-function obj = get_r(obj)
+function get_r(obj)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
