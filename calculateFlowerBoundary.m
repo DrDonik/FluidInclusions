@@ -1,4 +1,4 @@
-function obj = calculateFlowerBoundary(obj)
+function calculateFlowerBoundary(obj)
 
 % Load some data from IAPWS-95
 coeffs = inclusion.readIAPWS95data();
@@ -30,7 +30,7 @@ while step >= 5/5^10
         while Th_inf_working <= obj.store_T_pressureMinimum
             step = step/5;
             Th_inf_working = obj.store_T_pressureMinimum + 4*step;
-        end;
+        end
 
         rhoOverallInitial = inclusion.liqvap_density(Th_inf_working)*1000;
 
@@ -63,10 +63,10 @@ while step >= 5/5^10
             minvars_corrected = fmincon(helmholtz_function, minvars_corrected, [],[],[],[],[0 0],[1 Inf],[],options);
         else
 			minvars_corrected(1) = 1;
-            continue;
-        end;
+            continue
+        end
 
-    end;
+    end
 
     Th_inf_working = Th_inf_working + step;
     step = step/5;
