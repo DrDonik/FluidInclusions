@@ -7,7 +7,8 @@ function partPressure(obj)
     for T_ctr = find(obj.store_p_l==0)
 
         if isnan(obj.r(T_ctr))
-            obj.store_p_l(T_ctr) = pressure(obj.store_rho_overall_at_T(T_ctr), obj.store_T(T_ctr));
+            obj.store_p_l(T_ctr) = directPressureRaw(obj.store_rho_overall_at_T(T_ctr), obj.store_T(T_ctr));
+            obj.store_p_isoTh(T_ctr) = obj.store_p_l(T_ctr);
         else
             P0 = saturationPressure(obj.store_T(T_ctr));
             rho_liquid = inclusion.liqvap_density(obj.store_T(T_ctr));
@@ -17,6 +18,7 @@ function partPressure(obj)
 
             obj.store_p_l(T_ctr) = P0 - rho_liquid/(rho_liquid - rho_vapour)*delta_P;
             obj.store_p_v(T_ctr) = P0 - rho_vapour/(rho_liquid - rho_vapour)*delta_P;
+            obj.store_p_isoTh(T_ctr) = directPressureRaw(obj.store_rho_overall_at_T(T_ctr), obj.store_T(T_ctr));
         end
     end
 

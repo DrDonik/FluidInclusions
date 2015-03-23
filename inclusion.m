@@ -54,10 +54,11 @@
 %   r
 %       The bubble radii at temperature T, in um.
 %       This property is calculated as soon as it is queried.
-%   p_l, p_v
+%   p_l, p_v, p_isoTh
 %       The pressures of the liquid and vapour phase, respectively, at
-%       the temperature(s) T, in Pascal.
-%       This property is calculated as soon as it is queried.
+%       the temperature(s) T, in Pascal. p_isoTh is the liquid pressure on
+%       the iso-T_h curve (i.e. without bubble).
+%       These properties are calculated as soon as it is queried.
 %   rho_overall_at_T
 %       The mean density of the inclusionObject at the temperature(s) T
 %
@@ -150,6 +151,7 @@ classdef inclusion < hgsetget
 
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
+        p_isoTh         % The liquid pressure without bubble at temperature(s) T, in Pa
         
         rho_overall_at_T        % The mean density of the inclusion at temperature(s) T, in kg/m^3
         flowerBoundary  % The minimum necessary Th_inf for this volume so that a bubble is possible
@@ -182,7 +184,8 @@ classdef inclusion < hgsetget
         store_r         % The radius of the vapour bubble at temperature(s) T, in um
         store_p_l       % The liquid pressure at temperature(s) T, in Pa
         store_p_v       % The vapour pressure at temperature(s) T, in Pa
-        store_rho_overall_at_T        % The mean density of the inclusion at temperature(s) T, in kg/m^3
+        store_p_isoTh   % The liquid pressure without bubble at temperature(s) T, in Pa
+        store_rho_overall_at_T       % The mean density of the inclusion at temperature(s) T, in kg/m^3
         store_flowerBoundary         % The minimum necessary Th_inf for this volume so that a bubble is possible
     end
     
@@ -682,6 +685,7 @@ classdef inclusion < hgsetget
                 obj.store_r = [];                                   
                 obj.store_p_l = [];
                 obj.store_p_v = [];
+                obj.store_p_isoTh = [];
                 obj.store_rho_overall_at_T = [];
 
                 obj.store_T = [];
@@ -690,6 +694,8 @@ classdef inclusion < hgsetget
             
             % We expect T to be input in C, convert it to K here
             value = value + 273.15;
+            % We will need Th_inf_r, so trigger its calculation.
+            obj.Th_inf_r;
             
             temp_store_T = obj.store_T;
             
@@ -700,11 +706,13 @@ classdef inclusion < hgsetget
             temp_store_r = obj.store_r;
             temp_store_p_l = obj.store_p_l;
             temp_store_p_v = obj.store_p_v;
+            temp_store_p_isoTh = obj.store_p_isoTh;
             temp_store_rho_overall_at_T = obj.store_rho_overall_at_T;
             
             obj.store_r = zeros(size(value));                                   
             obj.store_p_l = zeros(size(value));
             obj.store_p_v = zeros(size(value));
+            obj.store_p_isoTh = zeros(size(value));
             obj.store_rho_overall_at_T = zeros(size(value));
             
             % save all the values that can be kept
@@ -715,11 +723,13 @@ classdef inclusion < hgsetget
                     obj.store_r(T_ctr) = temp_store_r(index);                                   
                     obj.store_p_l(T_ctr) = temp_store_p_l(index);
                     obj.store_p_v(T_ctr) = temp_store_p_v(index);
+                    obj.store_p_isoTh(T_ctr) = temp_store_p_isoTh(index);
                     obj.store_rho_overall_at_T(T_ctr) = temp_store_rho_overall_at_T(index);
-                elseif value(T_ctr) > obj.store_Th_inf
+                elseif value(T_ctr) >= obj.store_Th_inf || value(T_ctr) <= obj.store_Th_inf_r 
                     obj.store_r(T_ctr) = NaN;                                   
                     obj.store_p_l(T_ctr) = 0;
                     obj.store_p_v(T_ctr) = NaN;
+                    obj.store_p_isoTh(T_ctr) = 0;
                     obj.store_rho_overall_at_T(T_ctr) = 0;
                 end
                 
@@ -766,6 +776,15 @@ classdef inclusion < hgsetget
             
             value = obj.store_p_v;
         end
+        
+        function value = get.p_isoTh(obj)
+            if ~isempty(obj.store_T) && (isempty(obj.store_p_isoTh) || ~all(obj.store_p_isoTh))
+                partPressure(obj);
+            end
+            
+            value = obj.store_p_isoTh;
+        end
+
 		
     end
     
