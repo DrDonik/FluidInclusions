@@ -49,8 +49,8 @@ function [reftemp, alpha_V] = expansion_coeff(obj, T)
         case 7
             %disp('No correction applied')
 
-            reftemp = zeros(size(T));
-            alpha_V = zeros(size(T));
+            reftemp = 0;
+            alpha_V = 0;
 
     end
 

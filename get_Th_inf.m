@@ -42,6 +42,15 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
     else
         [mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
     end
+    
+    if length(T_obs) ~= length(Th_obs);
+        if length(T_obs) == 1;
+            T_obs = repmat(T_obs,1,length(Th_obs));
+        else
+            inclusionObject = [];
+            return
+        end
+    end
 
     T_pressureMinimum = T_pressureMinimum - 273.15;
 
@@ -61,7 +70,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         iterationCounter = 0;
 
         inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-        inclusionObject(Th_obs_ctr).T = T_obs;
+        inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
         radius_out_corrected = inclusionObject(Th_obs_ctr).r;
 
         Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
@@ -99,7 +108,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
 
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                    inclusionObject(Th_obs_ctr).T = T_obs;
+                    inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
                     radius_out_corrected = inclusionObject(Th_obs_ctr).r;
 
                     Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
@@ -152,7 +161,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
 
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                    inclusionObject(Th_obs_ctr).T = T_obs;
+                    inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
                     radius_out_corrected = inclusionObject(Th_obs_ctr).r;
 
                     Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
@@ -194,7 +203,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
 
                 inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                inclusionObject(Th_obs_ctr).T = T_obs;
+                inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
                 radius_out_corrected = inclusionObject(Th_obs_ctr).r;
 
                 Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
