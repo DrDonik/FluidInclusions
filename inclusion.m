@@ -227,6 +227,39 @@ classdef inclusion < hgsetget
     %% Methods to display the values
     methods
         
+        function pTplot(obj)
+            % This will plot a pT-diagram with all the relevant curves
+            
+            % Make sure the inclusion contains all necessary T-values
+            obj.T = [obj.Th_inf_r, obj.T_sp_r, obj.T_bin_r, obj.T_pressureMinimum, obj.T_bin, obj.T_sp, obj.Th_inf];
+            
+            figure
+            plot(obj.T, obj.p_isoTh, 'k')
+            hold on;
+            plot(obj.T, obj.p_v, 'r')
+
+            plot([obj.T_sp_r obj.T_sp_r], [obj.p_v(obj.T==obj.T_sp_r) obj.p_isoTh(obj.T==obj.T_sp_r)],'--k')
+
+            plot(obj.T(find(obj.T == obj.T_sp_r,1):find(obj.T == obj.T_bin_r,1)-1), ...
+                obj.p_l(find(obj.T == obj.T_sp_r,1):find(obj.T == obj.T_bin_r,1)-1),':b')
+            
+            plot([obj.T_bin_r obj.T_bin_r], [obj.p_v(obj.T==obj.T_bin_r) obj.p_isoTh(obj.T==obj.T_bin_r)],':k')
+
+            plot(obj.T(find(obj.T == obj.T_bin_r,1):find(obj.T == obj.T_bin,1)-1), ...
+                obj.p_l(find(obj.T == obj.T_bin_r,1):find(obj.T == obj.T_bin,1)-1),'b')
+            
+           plot([obj.T_bin obj.T_bin], [obj.p_v(obj.T==obj.T_bin) obj.p_isoTh(obj.T==obj.T_bin)],':k')
+
+           plot(obj.T(find(obj.T == obj.T_bin,1):find(obj.T == obj.T_sp,1)-1), ...
+                obj.p_l(find(obj.T == obj.T_bin,1):find(obj.T == obj.T_sp,1)-1),':b')
+            
+            plot([obj.T_sp obj.T_sp], [obj.p_v(obj.T==obj.T_sp) obj.p_isoTh(obj.T==obj.T_sp)],'--k')
+            
+            title(['Inclusion: ', obj.mineral, ', T_{h\infty} = ' num2str(obj.Th_inf), '\circC, V = ', num2str(obj.V), '\mum^3'])
+            xlabel('T [degree C]')
+            ylabel('p [Pa]')
+        end
+        
         function objProperties = getdisp(obj)
             % This will display all the properties that have been
             % calculated up to now. Use 'get(inclusionObject)' to use this.
@@ -530,8 +563,11 @@ classdef inclusion < hgsetget
             if isempty(obj.store_Th_inf_r)
                 
                 rho_diff = @(Th_inf_r_working) calc_rho_diff(obj, Th_inf_r_working);
-                Th_inf_r_working = [2*obj.store_T_pressureMinimum - obj.store_Th_inf-5 obj.store_T_pressureMinimum];
-
+                % The next line would be OK, if saturationDensity would
+                % work below -36 degrees, which it doesn't at the moment.
+                %Th_inf_r_working = [2*obj.store_T_pressureMinimum - obj.store_Th_inf-5 obj.store_T_pressureMinimum];
+                Th_inf_r_working = [273.15-36 obj.store_T_pressureMinimum];
+                
                 obj.store_Th_inf_r = fzero(rho_diff, Th_inf_r_working);
 
             end
@@ -796,13 +832,13 @@ classdef inclusion < hgsetget
             
             [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
 
-            rho_overall_at_Th_r_working = ...
+            rho_overall_at_Th_inf_r_working = ...
                 obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
                 (1-(reftemp-Th_inf_r_working).*alpha_V));
 
             [~, rho_sat] = saturationPressure(Th_inf_r_working);
            
-            rho_diff = rho_sat - rho_overall_at_Th_r_working;
+            rho_diff = rho_sat - rho_overall_at_Th_inf_r_working;
             return
         end
         
