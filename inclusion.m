@@ -229,7 +229,7 @@ classdef inclusion < hgsetget
         
         function objProperties = getdisp(obj)
             % This will display all the properties that have been
-            % calculated up to now.
+            % calculated up to now. Use 'get(inclusionObject)' to use this.
             
             % set up the struct to display
             objProperties = struct;
@@ -264,7 +264,8 @@ classdef inclusion < hgsetget
         
         
         function objProperties = getall(obj)
-            % This will calculate all the properties and display them.
+            % This will calculate all the properties and display them. Use
+            % 'getall(inclusionObject)' to use this.
             
             % set up the struct to display
             objProperties = struct;
