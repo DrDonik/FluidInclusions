@@ -732,7 +732,7 @@ classdef inclusion < hgsetget
             % We expect T to be input in C, convert it to K here
             value = value + 273.15;
             % We will need Th_inf_r, so trigger its calculation.
-            obj.Th_inf_r;
+            %%obj.T_sp_r; obj.T_sp;
             
             temp_store_T = obj.store_T;
             
@@ -762,7 +762,7 @@ classdef inclusion < hgsetget
                     obj.store_p_v(T_ctr) = temp_store_p_v(index);
                     obj.store_p_isoTh(T_ctr) = temp_store_p_isoTh(index);
                     obj.store_rho_overall_at_T(T_ctr) = temp_store_rho_overall_at_T(index);
-                elseif value(T_ctr) >= obj.store_Th_inf || value(T_ctr) <= obj.store_Th_inf_r 
+                elseif 1==0%% value(T_ctr) >= obj.store_T_sp || value(T_ctr) <= obj.store_T_sp_r 
                     obj.store_r(T_ctr) = NaN;                                   
                     obj.store_p_l(T_ctr) = 0;
                     obj.store_p_v(T_ctr) = NaN;
