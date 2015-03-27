@@ -32,7 +32,7 @@ function calculateFlowerBoundary(obj)
                 Th_inf_working = obj.store_T_pressureMinimum + 4*step;
             end
 
-            rhoOverallInitial = inclusion.liqvap_density(Th_inf_working)*1000;
+            [~, rhoOverallInitial] = saturationPressure(Th_inf_working);
 
             % Apply the volume correction
             [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_working);
@@ -55,8 +55,9 @@ function calculateFlowerBoundary(obj)
             % Make an initial estimate using IAPWS-95, pretending there was no
             % surface tension. These values will be larger, but close to the
             % final values.
-            minvars_corrected(1) = 1 - rho_overall_at_T/1000/inclusion.liqvap_density(obj.store_T_pressureMinimum);
-            minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.store_T_pressureMinimum)/rhoc*1000;
+            [~, liqvap_liqrho, liqvap_vaprho] = saturationPressure(obj.store_T_pressureMinimum);
+            minvars_corrected(1) = 1 - rho_overall_at_T/liqvap_liqrho;
+            minvars_corrected(2) = liqvap_vaprho/rhoc;
 
             if minvars_corrected(1) > 0
                 % Minimise the helmholtz energy

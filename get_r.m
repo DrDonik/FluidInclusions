@@ -31,8 +31,9 @@ function get_r(obj)
         % Make an initial estimate using IAPWS-95, pretending there was no
         % surface tension. These values will be larger, but close to the
         % final values.
-        minvars_corrected(1) = (1 - obj.rho_overall_at_T(T_ctr)/inclusion.liqvap_density(obj.store_T(T_ctr))/1000);
-        minvars_corrected(2) = inclusion.liqvap_density_vapour(obj.store_T(T_ctr))/rhoc*1000;
+        [~, liqvap_liqrho, liqvap_vaprho] = saturationPressure(obj.store_T(T_ctr));
+        minvars_corrected(1) = (1 - obj.rho_overall_at_T(T_ctr)/liqvap_liqrho);
+        minvars_corrected(2) = liqvap_vaprho/rhoc;
 
 
         % Calculate the surface tension

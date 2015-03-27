@@ -218,7 +218,7 @@ classdef inclusion < hgsetget
             obj.store_Th_inf = Th_inf + 273.15;
             obj.store_V = V/1e18;
             
-            obj.rho_overall = inclusion.liqvap_density(obj.store_Th_inf)*1000;
+            [~, obj.rho_overall] = saturationPressure(obj.store_Th_inf);
             
         end
         
@@ -799,7 +799,7 @@ classdef inclusion < hgsetget
                 obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
                 (1-(reftemp-Th_inf_r_working).*alpha_V));
 
-            rho_sat = inclusion.liqvap_density(Th_inf_r_working)*1000;
+            [~, rho_sat] = saturationPressure(Th_inf_r_working);
            
             rho_diff = rho_sat - rho_overall_at_Th_r_working;
             return
@@ -830,8 +830,6 @@ classdef inclusion < hgsetget
 		
         coeffs = readIAPWS95data()
         [mineralNumber, pressureMinimum, mineral] = set_fi_mineral(mineralNumber)
-        rho = liqvap_density(T)
-        rho = liqvap_density_vapour(T)
         sigma = surface_tension(T)
                 
     end
