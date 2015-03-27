@@ -55,7 +55,7 @@ function calculateFlowerBoundary(obj)
             % Make an initial estimate using IAPWS-95, pretending there was no
             % surface tension. These values will be larger, but close to the
             % final values.
-            [~, liqvap_liqrho, liqvap_vaprho] = saturationPressure(obj.store_T_pressureMinimum);
+            [liqvap_liqrho, liqvap_vaprho] = directAuxSaturationDensities(obj.store_T_pressureMinimum);
             minvars_corrected(1) = 1 - rho_overall_at_T/liqvap_liqrho;
             minvars_corrected(2) = liqvap_vaprho/rhoc;
 
