@@ -32,7 +32,7 @@ function calculateFlowerBoundary(obj)
                 Th_inf_working = obj.store_T_pressureMinimum + 4*step;
             end
 
-            [~, rhoOverallInitial] = saturationPressure(Th_inf_working);
+            rhoOverallInitial = directAuxSaturationDensities(Th_inf_working);
 
             % Apply the volume correction
             [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_working);
