@@ -560,20 +560,44 @@ classdef inclusion < hgsetget
         end
         
         function value = get.Th_inf_r(obj)
+            
             if isempty(obj.store_Th_inf_r)
                 
                 rho_diff = @(Th_inf_r_working) calc_rho_diff(obj, Th_inf_r_working);
-                % The next line would be OK, if saturationDensity would
-                % work below -36 degrees, which it doesn't at the moment.
-                %Th_inf_r_working = [2*obj.store_T_pressureMinimum - obj.store_Th_inf-5 obj.store_T_pressureMinimum];
                 Th_inf_r_working = [273.15-36 obj.store_T_pressureMinimum];
                 
                 obj.store_Th_inf_r = fzero(rho_diff, Th_inf_r_working);
 
             end
+            
             value = obj.store_Th_inf_r - 273.15;
+            return
+            
+            
+            function rho_diff = calc_rho_diff(obj, Th_inf_r_working)
+                
+                [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
+
+                rho_overall_at_Th_inf_r_working = ...
+                    obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
+                    (1-(reftemp-Th_inf_r_working).*alpha_V));
+                
+                % directAuxSaturationDensity is only valid down to -36
+                % centigrades. Below that, we rely on a fit for values
+                % calculated along an iso_Th curves.
+                if obj.store_Th_inf_r > 273.15-36
+                    rho_sat = directAuxSaturationDensities(Th_inf_r_working);
+                else
+                    rho_sat = 16.31*sqrt(0.2167*(Th_inf_r_working-273.15+39.56))+958.4;
+                end
+
+                rho_diff = rho_sat - rho_overall_at_Th_inf_r_working;
+                return
+                
+            end
+            
         end
-        
+
         function value = get.V(obj)
             value = obj.store_V*1e18;
         end
@@ -821,29 +845,9 @@ classdef inclusion < hgsetget
             
             value = obj.store_p_isoTh;
         end
-
-		
-    end
-    
-    %% Helper methods
-    methods (Access = protected)
-        
-        function rho_diff = calc_rho_diff(obj, Th_inf_r_working)
-            
-            [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
-
-            rho_overall_at_Th_inf_r_working = ...
-                obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
-                (1-(reftemp-Th_inf_r_working).*alpha_V));
-
-            rho_sat = directAuxSaturationDensities(Th_inf_r_working);
-           
-            rho_diff = rho_sat - rho_overall_at_Th_inf_r_working;
-            return
-        end
-        
-    end
 	
+    end
+    	
     %% Methods saved in files in the @inclusion folder
     methods (Access = protected)
         
