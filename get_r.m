@@ -53,7 +53,6 @@ function get_r(obj)
         try
             [minvars_corrected, ~, exitflag_corrected] = fmincon(helmholtz_function, minvars_corrected, [],[],[],[],[0 0],[1 Inf],[],options);
         catch
-
             % There seems to be a problem minimising the energy. Probably,
             % there is no bubble possible
             obj.store_r(T_ctr) = NaN;
