@@ -564,7 +564,7 @@ classdef inclusion < hgsetget
             if isempty(obj.store_Th_inf_r)
                 
                 rho_diff = @(Th_inf_r_working) calc_rho_diff(obj, Th_inf_r_working);
-                Th_inf_r_working = [273.15-36 obj.store_T_pressureMinimum];
+                Th_inf_r_working = [max(2*obj.store_T_pressureMinimum - obj.store_Th_inf-5, 273.15-39.56) obj.store_T_pressureMinimum];
                 
                 obj.store_Th_inf_r = fzero(rho_diff, Th_inf_r_working);
 
@@ -585,7 +585,7 @@ classdef inclusion < hgsetget
                 % directAuxSaturationDensity is only valid down to -36
                 % centigrades. Below that, we rely on a fit for values
                 % calculated along an iso_Th curves.
-                if obj.store_Th_inf_r > 273.15-36
+                if Th_inf_r_working > 273.15-36
                     rho_sat = directAuxSaturationDensities(Th_inf_r_working);
                 else
                     rho_sat = 16.31*sqrt(0.2167*(Th_inf_r_working-273.15+39.56))+958.4;
