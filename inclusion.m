@@ -582,14 +582,7 @@ classdef inclusion < hgsetget
                     obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
                     (1-(reftemp-Th_inf_r_working).*alpha_V));
                 
-                % directAuxSaturationDensity is only valid down to -36
-                % centigrades. Below that, we rely on a fit for values
-                % calculated along an iso_Th curves.
-                if Th_inf_r_working > 273.15-36
-                    rho_sat = directAuxSaturationDensities(Th_inf_r_working);
-                else
-                    rho_sat = 16.31*sqrt(0.2167*(Th_inf_r_working-273.15+39.56))+958.4;
-                end
+                rho_sat = directAuxSaturationDensities(Th_inf_r_working);
 
                 rho_diff = rho_sat - rho_overall_at_Th_inf_r_working;
                 return
