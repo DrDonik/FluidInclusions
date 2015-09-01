@@ -218,7 +218,7 @@ classdef inclusion < hgsetget
             obj.store_Th_inf = Th_inf + 273.15;
             obj.store_V = V/1e18;
             
-            obj.rho_overall = directAuxSaturationDensities(obj.store_Th_inf);
+            [~, obj.rho_overall] = saturationPressure(obj.store_Th_inf);
             
         end
         
@@ -582,7 +582,7 @@ classdef inclusion < hgsetget
                     obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
                     (1-(reftemp-Th_inf_r_working).*alpha_V));
                 
-                rho_sat = directAuxSaturationDensities(Th_inf_r_working);
+                [~, rho_sat] = saturationPressure(Th_inf_r_working);
 
                 rho_diff = rho_sat - rho_overall_at_Th_inf_r_working;
                 return

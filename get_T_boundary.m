@@ -108,7 +108,7 @@ function [T_boundary, r_boundary] = ...
             % Make an initial estimate using IAPWS-95, pretending there was no
             % surface tension. These values will be larger, but close to the
             % final values.
-            [liqvap_liqrho, liqvap_vaprho] = directAuxSaturationDensities(T_boundary_working);
+            [~, liqvap_liqrho, liqvap_vaprho] = saturationPressure(T_boundary_working);
             minvars_corrected(1) = 1 - rho_overall_at_T/liqvap_liqrho;
             minvars_corrected(2) = liqvap_vaprho/rhoc;
 

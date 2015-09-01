@@ -32,7 +32,7 @@ function calculateFlowerBoundary(obj)
                 Th_inf_working = obj.store_T_pressureMinimum + 4*step;
             end
 
-            rhoOverallInitial = directAuxSaturationDensities(Th_inf_working);
+            [~, rhoOverallInitial] = saturationPressure(Th_inf_working);
 
             % Apply the volume correction
             [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_working);
@@ -55,7 +55,7 @@ function calculateFlowerBoundary(obj)
             % Make an initial estimate using IAPWS-95, pretending there was no
             % surface tension. These values will be larger, but close to the
             % final values.
-            [liqvap_liqrho, liqvap_vaprho] = directAuxSaturationDensities(obj.store_T_pressureMinimum);
+            [~, liqvap_liqrho, liqvap_vaprho] = saturationPressure(obj.store_T_pressureMinimum);
             minvars_corrected(1) = 1 - rho_overall_at_T/liqvap_liqrho;
             minvars_corrected(2) = liqvap_vaprho/rhoc;
 
