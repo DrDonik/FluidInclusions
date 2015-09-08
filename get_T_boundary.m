@@ -94,7 +94,11 @@ function [T_boundary, r_boundary] = ...
 
             % Calculate the surface tension
             tau = Tc/T_boundary_working;
-            stprime = rc/(obj.store_V)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+            if calc_sp_boundary ~= -1
+                stprime = rc/(obj.store_V)^(1/3) * ((tau - 1)/tau)^mu * ((1 + b)*tau - b);
+            else
+                stprime = 0;
+            end
 
             % Put the salt term here: A = C*w*Mw/Ms*dm.
             % C is the dissociation number, w the weight fraction of

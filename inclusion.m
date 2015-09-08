@@ -562,31 +562,16 @@ classdef inclusion < hgsetget
         function value = get.Th_inf_r(obj)
             
             if isempty(obj.store_Th_inf_r)
-                
-                Th_inf_r_working = [max(2*obj.store_T_pressureMinimum - obj.store_Th_inf-5, 273.15-39.56) obj.store_T_pressureMinimum];
-                
-                obj.store_Th_inf_r = fzero(@(Th_inf_r_working) rho_diff(obj, Th_inf_r_working), Th_inf_r_working);
-
+                if isnan(obj.r_pressureMinimum)
+                    obj.store_Th_inf_r = NaN;
+                    obj.store_Th_inf_r = NaN;
+                else
+                    obj.store_Th_inf_r = get_T_boundary(obj, -1, 0);
+                end
             end
             
             value = obj.store_Th_inf_r - 273.15;
             return
-            
-            
-            function rho_diff = rho_diff(obj, Th_inf_r_working)
-                
-                [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
-
-                rho_overall_at_Th_inf_r_working = ...
-                    obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
-                    (1-(reftemp-Th_inf_r_working).*alpha_V));
-                
-                [~, rho_sat] = saturationPressure(Th_inf_r_working);
-
-                rho_diff = rho_sat - rho_overall_at_Th_inf_r_working;
-                return
-                
-            end
             
         end
 
@@ -748,7 +733,9 @@ classdef inclusion < hgsetget
             % We expect T to be input in C, convert it to K here
             value = value + 273.15;
             % We will need Th_inf_r, so trigger its calculation.
-            obj.Th_inf_r;
+            if value ~= obj.store_T_pressureMinimum
+                obj.Th_inf_r;
+            end
             
             temp_store_T = obj.store_T;
             
@@ -767,10 +754,9 @@ classdef inclusion < hgsetget
             obj.store_p_v = zeros(size(value));
             obj.store_p_isoTh = zeros(size(value));
             obj.store_rho_overall_at_T = zeros(size(value));
-            
+
             % save all the values that can be kept
             for T_ctr = 1:length(value)
-            
                 index = find(temp_store_T==value(T_ctr), 1);
                 if index
                     obj.store_r(T_ctr) = temp_store_r(index);                                   
@@ -778,14 +764,13 @@ classdef inclusion < hgsetget
                     obj.store_p_v(T_ctr) = temp_store_p_v(index);
                     obj.store_p_isoTh(T_ctr) = temp_store_p_isoTh(index);
                     obj.store_rho_overall_at_T(T_ctr) = temp_store_rho_overall_at_T(index);
-                elseif value(T_ctr) >= obj.store_Th_inf || value(T_ctr) <= obj.store_Th_inf_r 
+                elseif value(T_ctr) >= obj.store_Th_inf || (~isempty(obj.store_Th_inf_r) && value(T_ctr) <= obj.store_Th_inf_r)
                     obj.store_r(T_ctr) = NaN;                                   
                     obj.store_p_l(T_ctr) = 0;
                     obj.store_p_v(T_ctr) = NaN;
                     obj.store_p_isoTh(T_ctr) = 0;
                     obj.store_rho_overall_at_T(T_ctr) = 0;
                 end
-                
             end
             
         end
