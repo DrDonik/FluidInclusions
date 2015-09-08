@@ -563,10 +563,9 @@ classdef inclusion < hgsetget
             
             if isempty(obj.store_Th_inf_r)
                 
-                rho_diff = @(Th_inf_r_working) calc_rho_diff(obj, Th_inf_r_working);
                 Th_inf_r_working = [max(2*obj.store_T_pressureMinimum - obj.store_Th_inf-5, 273.15-39.56) obj.store_T_pressureMinimum];
                 
-                obj.store_Th_inf_r = fzero(rho_diff, Th_inf_r_working);
+                obj.store_Th_inf_r = fzero(@(Th_inf_r_working) rho_diff(obj, Th_inf_r_working), Th_inf_r_working);
 
             end
             
@@ -574,7 +573,7 @@ classdef inclusion < hgsetget
             return
             
             
-            function rho_diff = calc_rho_diff(obj, Th_inf_r_working)
+            function rho_diff = rho_diff(obj, Th_inf_r_working)
                 
                 [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
 
