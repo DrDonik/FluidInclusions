@@ -248,9 +248,9 @@ classdef inclusion < hgsetget
             plot(obj.T(find(obj.T == obj.T_bin_r,1):find(obj.T == obj.T_bin,1)-1), ...
                 obj.p_l(find(obj.T == obj.T_bin_r,1):find(obj.T == obj.T_bin,1)-1),'b')
             
-           plot([obj.T_bin obj.T_bin], [obj.p_v(obj.T==obj.T_bin) obj.p_isoTh(obj.T==obj.T_bin)],':k')
+            plot([obj.T_bin obj.T_bin], [obj.p_v(obj.T==obj.T_bin) obj.p_isoTh(obj.T==obj.T_bin)],':k')
 
-           plot(obj.T(find(obj.T == obj.T_bin,1):find(obj.T == obj.T_sp,1)-1), ...
+            plot(obj.T(find(obj.T == obj.T_bin,1):find(obj.T == obj.T_sp,1)-1), ...
                 obj.p_l(find(obj.T == obj.T_bin,1):find(obj.T == obj.T_sp,1)-1),':b')
             
             plot([obj.T_sp obj.T_sp], [obj.p_v(obj.T==obj.T_sp) obj.p_isoTh(obj.T==obj.T_sp)],'--k')
