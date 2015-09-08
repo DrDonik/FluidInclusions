@@ -560,19 +560,27 @@ classdef inclusion < hgsetget
         end
         
         function value = get.Th_inf_r(obj)
-            
             if isempty(obj.store_Th_inf_r)
                 if isnan(obj.r_pressureMinimum)
                     obj.store_Th_inf_r = NaN;
                     obj.store_Th_inf_r = NaN;
                 else
-                    obj.store_Th_inf_r = get_T_boundary(obj, -1, 0);
+                    if obj.store_Th_inf > 75 + 273.15
+                        obj.store_Th_inf_r = fzero(@(Th_inf_working) pressure(obj, Th_inf_working), [-40 + 273.15, -35 + 273.15]);
+                    else
+                        obj.store_Th_inf_r = get_T_boundary(obj, -1, 0);
+                    end
                 end
             end
             
             value = obj.store_Th_inf_r - 273.15;
-            return
-            
+            function pressure = pressure(obj, Th_inf_r_working)
+                [reftemp, alpha_V] = expansion_coeff(obj, Th_inf_r_working);
+                rho_overall_at_T = obj.rho_overall * ((1-(reftemp-obj.store_Th_inf)*alpha_V) ./ ...
+                   (1-(reftemp-Th_inf_r_working).*alpha_V));
+
+                pressure = directPressureRaw(rho_overall_at_T, Th_inf_r_working);                
+            end
         end
 
         function value = get.V(obj)
