@@ -9,7 +9,7 @@
 %   obj is the object of class inclusion for which the boundary temperature
 %     should be calculated
 %   calc_sp_boundary is whether you want the spinodal (1) or the binodal (0) 
-%     temperature
+%     temperature, or Th_inf (-1), i.e., no surface tension
 %   calc_prograde_boundary is whether you want the prograde (1) or retrograde (0) 
 %     temperature
 % All arguments are mandatory.
