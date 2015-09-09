@@ -22,6 +22,8 @@
 
 function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 
+    debug = 1;
+
     if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
     if nargin < 6
@@ -112,7 +114,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     radius_out_corrected = inclusionObject(Th_obs_ctr).r;
 
                     Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
-
+                    
                     if isnan(Th_obs_calculated)
                         if sign(Th_inf_step) == 1
                             % we probably crossed the flower boundary
@@ -137,6 +139,14 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                         end
                     end
 
+                end
+
+                if debug
+                    disp(['Iteration: ', num2str(iterationCounter), ': Thi_inf step']);
+                    disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
+                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(radius_out_corrected)]);
+                    disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
+                    disp(' ');
                 end
 
                 % Calculate the derivative
@@ -191,6 +201,14 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     end
 
                 end
+                
+                if debug
+                    disp(['Iteration: ', num2str(iterationCounter), ': V step']);
+                    disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
+                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(radius_out_corrected)]);
+                    disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
+                    disp(' ');
+                end
 
                 % Calculate the derivative
                 r_grad_V = (radius_out_corrected_old - radius_out_corrected)/V_step;
@@ -232,6 +250,15 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     end
                 end
 
+            end
+
+            if debug
+                disp(['Iteration: ', num2str(iterationCounter), ': Full step']);
+                disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
+                disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(radius_out_corrected)]);
+                disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
+                disp(' ');
+                disp(' ');
             end
 
             % The vectorised version of the function looks as follows
