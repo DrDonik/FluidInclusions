@@ -566,9 +566,9 @@ classdef inclusion < hgsetget
                     obj.store_Th_inf_r = NaN;
                 else
                     if obj.store_Th_inf > 75 + 273.15
-                        obj.store_Th_inf_r = fzero(@(Th_inf_working) pressure(obj, Th_inf_working), [-40 + 273.15, -35 + 273.15]);
+                        obj.store_Th_inf_r = fzero(@(Th_inf_working) pressure(obj, Th_inf_working), [-40 + 273.15, -34 + 273.15]);
                     else
-                        obj.store_Th_inf_r = get_T_boundary(obj, -1, 0);
+                        obj.store_Th_inf_r = fzero(@(Th_inf_working) pressure(obj, Th_inf_working) - saturationPressure(Th_inf_working), [-36 + 273.15, obj.store_T_pressureMinimum]);
                     end
                 end
             end
