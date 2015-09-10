@@ -567,9 +567,11 @@ classdef inclusion < hgsetget
             if isempty(obj.store_Th_inf_r)
                 if isnan(obj.r_pressureMinimum)
                     obj.store_Th_inf_r = NaN;
-                    obj.store_Th_inf_r = NaN;
                 else
-                    if obj.store_Th_inf > 75 + 273.15
+                    if (obj.mineralNumber == 5 && obj.store_Th_inf > 105.134 + 273.15) || ...
+                            (obj.mineralNumber == 7 && obj.store_Th_inf >= 99.4 + 273.15)
+                        obj.store_Th_inf_r = NaN;
+                    elseif obj.store_Th_inf > 75 + 273.15
                         obj.store_Th_inf_r = fzero(@(Th_inf_working) pressure(obj, Th_inf_working), [-40 + 273.15, -30 + 273.15]);
                     else
                         obj.store_Th_inf_r = fzero(@(Th_inf_working) pressure(obj, Th_inf_working) - saturationPressure(Th_inf_working), [-36 + 273.15, obj.store_T_pressureMinimum]);
