@@ -490,6 +490,7 @@ classdef inclusion < hgsetget
             [Th_inf_old_array, V_array] = dimensions(obj_old_array);
 
             if isempty(Th_inf_old_array) || isempty(V_array)
+                obj_array = obj_old_array;
                 return
             end
             
@@ -498,13 +499,14 @@ classdef inclusion < hgsetget
             Th_inf_new_array = unique([Th_inf Th_inf_old_array]);
             
             if length(Th_inf_new_array) == length(Th_inf_old_array)
+                obj_array = obj_old_array;
                 return
             end
             
             % Look where the values were in the old array
             for Th_inf_ctr = length(Th_inf_new_array):-1:1
                 old_Th_inf_index = find(Th_inf_old_array == Th_inf_new_array(Th_inf_ctr));
-                if old_Th_inf_index
+                if ~isempty(old_Th_inf_index)
                     % copy the old row
                     obj_array(Th_inf_ctr, :) = obj_old_array(old_Th_inf_index, :);
                 else
@@ -522,6 +524,7 @@ classdef inclusion < hgsetget
             [Th_inf_array, V_old_array] = dimensions(obj_old_array);
 
             if isempty(Th_inf_array) || isempty(V_old_array)
+                obj_array = obj_old_array;
                 return
             end
             
@@ -530,13 +533,14 @@ classdef inclusion < hgsetget
             V_new_array = unique([V V_old_array]);
             
             if length(V_new_array) == length(V_old_array)
+                obj_array = obj_old_array;
                 return
             end
             
             % Look where the values were in the old array
             for V_ctr = length(V_new_array):-1:1
                 old_V_index = find(V_old_array == V_new_array(V_ctr));
-                if old_V_index
+                if ~isempty(old_V_index)
                     % copy the old row
                     obj_array(:, V_ctr) = obj_old_array(:, old_V_index);
                 else
