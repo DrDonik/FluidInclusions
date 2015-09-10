@@ -485,9 +485,9 @@ classdef inclusion < hgsetget
             
         end
         
-        function obj_array = insert_Th_inf(obj_array, Th_inf)
+        function obj_array = insert_Th_inf(obj_old_array, Th_inf)
             % figure out the dimensions of the input array
-            [Th_inf_old_array, V_array] = dimensions(obj_array);
+            [Th_inf_old_array, V_array] = dimensions(obj_old_array);
 
             if isempty(Th_inf_old_array) || isempty(V_array)
                 return
@@ -506,20 +506,20 @@ classdef inclusion < hgsetget
                 old_Th_inf_index = find(Th_inf_old_array == Th_inf_new_array(Th_inf_ctr));
                 if old_Th_inf_index
                     % copy the old row
-                    obj_array(Th_inf_ctr, :) = obj_array(old_Th_inf_index, :);
+                    obj_array(Th_inf_ctr, :) = obj_old_array(old_Th_inf_index, :);
                 else
                     % create the new row
                     for V_ctr = length(V_array):-1:1
                         obj_array(Th_inf_ctr, V_ctr) = ...
-                            inclusion(Th_inf_new_array(Th_inf_ctr), V_array(V_ctr), obj_array(1).mineralNumber);
+                            inclusion(Th_inf_new_array(Th_inf_ctr), V_array(V_ctr), obj_old_array(1).mineralNumber);
                     end
                 end
             end
         end
         
-        function obj_array = insert_V(obj_array, V)
+        function obj_array = insert_V(obj_old_array, V)
             % figure out the dimensions of the input array
-            [Th_inf_array, V_old_array] = dimensions(obj_array);
+            [Th_inf_array, V_old_array] = dimensions(obj_old_array);
 
             if isempty(Th_inf_array) || isempty(V_old_array)
                 return
@@ -538,12 +538,12 @@ classdef inclusion < hgsetget
                 old_V_index = find(V_old_array == V_new_array(V_ctr));
                 if old_V_index
                     % copy the old row
-                    obj_array(:, V_ctr) = obj_array(:, old_V_index);
+                    obj_array(:, V_ctr) = obj_old_array(:, old_V_index);
                 else
                     % create the new row
                     for Th_inf_ctr = length(Th_inf_array):-1:1
                         obj_array(Th_inf_ctr, V_ctr) = ...
-                            inclusion(Th_inf_array(Th_inf_ctr), V_new_array(V_ctr), obj_array(1).mineralNumber);
+                            inclusion(Th_inf_array(Th_inf_ctr), V_new_array(V_ctr), obj_old_array(1).mineralNumber);
                     end
                 end
             end
