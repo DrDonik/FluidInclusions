@@ -22,6 +22,7 @@
 
 function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
 
+    %% Preliminaries, set up all the necessary values, if they are not given
     debug = 1;
 
     if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
@@ -64,6 +65,8 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
     end
 
     tolerance = 1e-2;
+    
+    %% Start of the main routine
 
     for Th_obs_ctr = length(Th_obs):-1:1
 
@@ -75,7 +78,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
         Th_inf_step = -1;
-        V_step = -V(Th_obs_ctr)*1e-3;
+        V_step = -V(Th_obs_ctr)*1e-2;
 
         while iterationCounter < 12
 
@@ -301,9 +304,10 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
     return
 end
 
+%% Helper function to return the two calculated values r_obs and Th_obs, 
+% for a given combination of Th_inf and V
 
 function [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject, T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r)
-    
     inclusionObject.T = T_obs;
     r_obs_calculated = inclusionObject.r(inclusionObject.T == T_obs);
 
