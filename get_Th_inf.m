@@ -72,10 +72,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         iterationCounter = 0;
 
         inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-        inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
-        radius_out_corrected = inclusionObject(Th_obs_ctr).r(inclusionObject(Th_obs_ctr).T == inclusionObject(Th_obs_ctr).T_pressureMinimum);
-
-        Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+        [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
         Th_inf_step = -1;
         V_step = -V(Th_obs_ctr)*1e-3;
@@ -85,12 +82,12 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             iterationCounter = iterationCounter + 1;
 
             Th_obs_calculated_old = Th_obs_calculated;
-            radius_out_corrected_old = radius_out_corrected;
+            r_obs_calculated_old = r_obs_calculated;
 
             Th_obs_calculated = NaN; % This is for NaN-Catching
-            radius_out_corrected = NaN;
+            r_obs_calculated = NaN;
 
-            while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+            while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
 
                 % Sometimes it happens that we cross pressureMinimum. This is bad, so try
                 % to recover:
@@ -106,14 +103,11 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 % becomes NaN, you requested strange things, such as a different
                 % pressureMinimum.
                 Th_obs_calculated = NaN;
-                radius_out_corrected = NaN;
-                while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+                r_obs_calculated = NaN;
+                while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
 
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                    inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
-                    radius_out_corrected = inclusionObject(Th_obs_ctr).r(inclusionObject(Th_obs_ctr).T == T_obs(Th_obs_ctr));
-
-                    Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+                    [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
                     
                     if isnan(Th_obs_calculated)
                         if sign(Th_inf_step) == 1
@@ -125,7 +119,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                             keyboard
                             %break
                         end
-                    elseif isnan(radius_out_corrected)
+                    elseif isnan(r_obs_calculated)
                         % You shouldn't end here, unless your PressureMinimum is not the
                         % original from set_fi_mineral
                         if Th_obs_calculated < T_pressureMinimum
@@ -144,13 +138,13 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 if debug
                     disp(['Iteration: ', num2str(iterationCounter), ': Thi_inf step']);
                     disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
-                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(radius_out_corrected)]);
+                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(r_obs_calculated)]);
                     disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
                     disp(' ');
                 end
 
                 % Calculate the derivative
-                r_grad_Th_inf = (radius_out_corrected_old - radius_out_corrected)/Th_inf_step;
+                r_obs_grad_Th_inf = (r_obs_calculated_old - r_obs_calculated)/Th_inf_step;
                 Th_obs_grad_Th_inf = (Th_obs_calculated_old - Th_obs_calculated)/Th_inf_step;
                 % go back
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
@@ -167,14 +161,11 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
                 % This is for NaN-Catching. See above for details
                 Th_obs_calculated = NaN;
-                radius_out_corrected = NaN;
-                while isnan(Th_obs_calculated) || isnan(radius_out_corrected)
+                r_obs_calculated = NaN;
+                while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
 
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                    inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
-                    radius_out_corrected = inclusionObject(Th_obs_ctr).r(inclusionObject(Th_obs_ctr).T == T_obs(Th_obs_ctr));
-
-                    Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+                    [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
                     if isnan(Th_obs_calculated);
                         if sign(V_step) == 1
@@ -186,7 +177,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                             keyboard
                             %break
                         end
-                    elseif isnan(radius_out_corrected)
+                    elseif isnan(r_obs_calculated)
                         % You shouldn't end here, unless your PressureMinimum is not the
                         % original from set_fi_mineral
                         if Th_obs_calculated < T_pressureMinimum
@@ -205,26 +196,23 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 if debug
                     disp(['Iteration: ', num2str(iterationCounter), ': V step']);
                     disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
-                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(radius_out_corrected)]);
+                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(r_obs_calculated)]);
                     disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
                     disp(' ');
                 end
 
                 % Calculate the derivative
-                r_grad_V = (radius_out_corrected_old - radius_out_corrected)/V_step;
+                r_obs_grad_V = (r_obs_calculated_old - r_obs_calculated)/V_step;
                 Th_obs_grad_V = (Th_obs_calculated_old - Th_obs_calculated)/V_step;
 
                 % What we just did is calculate the Jacobian:
-                Jc = [r_grad_Th_inf r_grad_V; Th_obs_grad_Th_inf Th_obs_grad_V];
+                Jc = [r_obs_grad_Th_inf r_obs_grad_V; Th_obs_grad_Th_inf Th_obs_grad_V];
 
                 % Now go to the new position (We didn't change the volume back ...)
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
 
                 inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                inclusionObject(Th_obs_ctr).T = T_obs(Th_obs_ctr);
-                radius_out_corrected = inclusionObject(Th_obs_ctr).r(inclusionObject(Th_obs_ctr).T == T_obs(Th_obs_ctr));
-
-                Th_obs_calculated = get_Th_obs_calculated(inclusionObject(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+                [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
                 % If one of the two is NaN here, we have to redo the whole thing,
                 % since the combination of the two new values doesn't work.
@@ -235,7 +223,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     V_step = V_step/2;
                     Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
                     Th_inf_step = Th_inf_step/2;
-                elseif isnan(radius_out_corrected);
+                elseif isnan(r_obs_calculated);
                     % You shouldn't end here, unless your PressureMinimum is not the
                     % original from set_fi_mineral
                     if Th_obs_calculated < T_pressureMinimum
@@ -255,14 +243,14 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             if debug
                 disp(['Iteration: ', num2str(iterationCounter), ': Full step']);
                 disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
-                disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(radius_out_corrected)]);
+                disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(r_obs_calculated)]);
                 disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
                 disp(' ');
                 disp(' ');
             end
 
             % The vectorised version of the function looks as follows
-            F_vec = [radius_out_corrected; Th_obs_calculated];
+            F_vec = [r_obs_calculated; Th_obs_calculated];
 
             % The next step should take us to a better guess and will be calculated
             % using Newton's method
@@ -292,7 +280,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             end
 
             if abs(Th_obs_calculated - Th_obs(Th_obs_ctr)) < tolerance && ...
-                abs(radius_out_corrected - r_obs(Th_obs_ctr)) < tolerance
+                abs(r_obs_calculated - r_obs(Th_obs_ctr)) < tolerance
                 disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
                 iterationCounter = 13; % There shall be no "too many iterations"-message
                 break
@@ -314,7 +302,10 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 end
 
 
-function Th_obs_calculated = get_Th_obs_calculated(inclusionObject, Th_obs_is_T_bin, Th_obs_is_Th_inf_r)
+function [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject, T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r)
+    
+    inclusionObject.T = T_obs;
+    r_obs_calculated = inclusionObject.r(inclusionObject.T == T_obs);
 
     if Th_obs_is_T_bin
         if Th_obs_is_Th_inf_r
