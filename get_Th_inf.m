@@ -98,9 +98,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             end
 
             Th_obs_calculated = NaN; % This is for NaN-Catching
-            r_obs_calculated = NaN;
-
-            while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
+            while isnan(Th_obs_calculated)
 
                 % First, do the step in Th_inf-direction
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
@@ -162,11 +160,17 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
                     Th_inf_step = Th_inf_step/2;
                 end
-
             end
 
             % The vectorised version of the function looks as follows
             F_vec = [r_obs_calculated; Th_obs_calculated];
+
+            if sum(((F_vec - root_pos).*[10; 1]).^2) < tolerance
+                disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
+                break
+            elseif iterationCounter == 12
+                error('Too many iterations');
+            end
 
             % The next step should take us to a better guess and will be calculated
             % using Newton's method
@@ -176,15 +180,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
             Th_inf_step = next_step_vec(1);
             V_step = next_step_vec(2);
-
-            if sum(((F_vec - root_pos).*[10; 1]).^2) < tolerance
-                disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
-                break
-            end
-
-            if iterationCounter == 12
-                error('Too many iterations');
-            end
 
             if sum((next_step_vec.*[100; 1]).^2) < tolerance^2;
                 disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
