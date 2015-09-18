@@ -113,27 +113,9 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
                     
                     if isnan(Th_obs_calculated)
-                        if sign(Th_inf_step) == 1
-                            % we probably crossed the flower boundary
-                            Th_inf_step = Th_inf_step/2;
-                            Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
-                        else
-                            % Something else went wrong.
-                            keyboard
-                            %break
-                        end
-                    elseif isnan(r_obs_calculated)
-                        % You shouldn't end here, unless your PressureMinimum is not the
-                        % original from set_fi_mineral
-                        if Th_obs_calculated < T_pressureMinimum
-                            % Told you. Let's try to recover.
-                            Th_inf_step = Th_inf_step/2;
-                            Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
-                        else
-                            % You definitely should never end here!
-                            keyboard
-                            %break
-                        end
+                        % we probably crossed the flower boundary
+                        Th_inf_step = Th_inf_step/2;
+                        Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
                     end
 
                 end
@@ -171,27 +153,9 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
                     if isnan(Th_obs_calculated);
-                        if sign(V_step) == 1
-                            % we probably crossed the flower boundary
-                            V_step = V_step/2;
-                            V(Th_obs_ctr) = V(Th_obs_ctr) + V_step;
-                        else
-                            % Something else went wrong.
-                            keyboard
-                            %break
-                        end
-                    elseif isnan(r_obs_calculated)
-                        % You shouldn't end here, unless your PressureMinimum is not the
-                        % original from set_fi_mineral
-                        if Th_obs_calculated < T_pressureMinimum
-                            % Told you. Let's try to recover.
-                            V_step = V_step/2;
-                            V(Th_obs_ctr) = V(Th_obs_ctr) + V_step;
-                        else
-                            % You definitely should never end here!
-                            keyboard
-                            %break
-                        end
+                        % we probably crossed the flower boundary
+                        V_step = V_step/2;
+                        V(Th_obs_ctr) = V(Th_obs_ctr) + V_step;
                     end
 
                 end
@@ -226,19 +190,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     V_step = V_step/2;
                     Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
                     Th_inf_step = Th_inf_step/2;
-                elseif isnan(r_obs_calculated);
-                    % You shouldn't end here, unless your PressureMinimum is not the
-                    % original from set_fi_mineral
-                    if Th_obs_calculated < T_pressureMinimum
-                        % Told you. Let's try to recover.
-                        Th_inf_step = Th_inf_step/2;
-                        Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
-                    else
-                        % You definitely should never end here! If you do, I have
-                        % to give up.
-                        keyboard
-                        %break
-                    end
                 end
 
             end
@@ -261,16 +212,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             % Jacobian
 
             next_step_vec = Jc\(F_vec - root_pos);
-
-            if isnan(next_step_vec(1)) || isnan(next_step_vec(2));
-                % We'll end here if JC doesn't have an inverse.
-                % Maybe one of the steps is too small, then we don't have to make
-                % that step. Let's figure it out:
-                keyboard
-                %Jc = [r_grad_Th_inf r_grad_V; Th_obs_grad_Th_inf Th_obs_grad_V];
-
-                %next_step_vec = pinv(Jc)*(F_vec - root_pos);
-            end
 
             Th_inf_step = next_step_vec(1);
             V_step = next_step_vec(2);
