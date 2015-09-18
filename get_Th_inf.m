@@ -73,7 +73,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         iterationCounter = 0;
 
         inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-        [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+        [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
         Th_inf_step = -1;
         V_step = -V(Th_obs_ctr)*1e-2;
@@ -114,7 +114,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
 
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                    [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+                    [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
                     
                     if isnan(Th_obs_calculated)
                         % we probably crossed the flower boundary
@@ -139,7 +139,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
 
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                    [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+                    [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
                     if isnan(Th_obs_calculated);
                         % we probably crossed the flower boundary
@@ -160,7 +160,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
 
                 inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-                [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+                [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
                 % If one of the two is NaN here, we have to redo the whole thing,
                 % since the combination of the two new values doesn't work.
@@ -216,7 +216,7 @@ end
 %% Helper function to return the two calculated values r_obs and Th_obs, 
 % for a given combination of Th_inf and V
 
-function [r_obs_calculated, Th_obs_calculated] = get_Th_obs_and_r_obs(inclusionObject, T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r)
+function [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject, T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r)
     inclusionObject.T = T_obs;
     r_obs_calculated = inclusionObject.r(inclusionObject.T == T_obs);
 
