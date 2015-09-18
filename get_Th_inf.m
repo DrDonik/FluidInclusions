@@ -21,9 +21,7 @@
 %
 
 function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
-
     %% Preliminaries, set up all the necessary values, if they are not given
-    debug = 1;
 
     if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
@@ -120,14 +118,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
                 end
 
-                if debug
-                    disp(['Iteration: ', num2str(iterationCounter), ': Thi_inf step']);
-                    disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
-                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(r_obs_calculated)]);
-                    disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
-                    disp(' ');
-                end
-
                 % Calculate the derivative
                 r_obs_grad_Th_inf = (r_obs_calculated_old - r_obs_calculated)/Th_inf_step;
                 Th_obs_grad_Th_inf = (Th_obs_calculated_old - Th_obs_calculated)/Th_inf_step;
@@ -159,14 +149,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     end
 
                 end
-                
-                if debug
-                    disp(['Iteration: ', num2str(iterationCounter), ': V step']);
-                    disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
-                    disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(r_obs_calculated)]);
-                    disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
-                    disp(' ');
-                end
 
                 % Calculate the derivative
                 r_obs_grad_V = (r_obs_calculated_old - r_obs_calculated)/V_step;
@@ -192,15 +174,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     Th_inf_step = Th_inf_step/2;
                 end
 
-            end
-
-            if debug
-                disp(['Iteration: ', num2str(iterationCounter), ': Full step']);
-                disp(['Th_inf: ', num2str(Th_inf(Th_obs_ctr)), '; V: ', num2str(V(Th_obs_ctr))]);
-                disp(['Th_obs: ', num2str(Th_obs_calculated), '; r_obs: ', num2str(r_obs_calculated)]);
-                disp(['(Sought: Th_obs: ', num2str(root_pos(2)), '; r_obs: ', num2str(root_pos(1)), ')']);
-                disp(' ');
-                disp(' ');
             end
 
             % The vectorised version of the function looks as follows
