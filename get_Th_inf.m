@@ -62,7 +62,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         Th_obs_is_Th_inf_r = 0;
     end
 
-    tolerance = 1e-2;
+    tolerance = 1e-4;
     
     %% Start of the main routine
 
