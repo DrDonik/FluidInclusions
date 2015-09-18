@@ -189,24 +189,20 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             Th_inf_step = next_step_vec(1);
             V_step = next_step_vec(2);
 
-            if abs(Th_inf_step) < tolerance/100 && ...
-                    abs(V_step) < tolerance/100;
-                disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
-                iterationCounter = 13; % There shall be no "too many iterations"-message
-                break
-            end
-
-            if abs(Th_obs_calculated - Th_obs(Th_obs_ctr)) < tolerance && ...
-                abs(r_obs_calculated - r_obs(Th_obs_ctr)) < tolerance
+            if sum(((F_vec - root_pos).*[10; 1]).^2) < tolerance
                 disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
-                iterationCounter = 13; % There shall be no "too many iterations"-message
                 break
             end
 
-        end
+            if iterationCounter == 12
+                error('Too many iterations');
+            end
 
-        if iterationCounter == 12
-            disp('Too many iterations');
+            if sum((next_step_vec.*[100; 1]).^2) < tolerance^2;
+                disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
+                break
+            end
+
         end
 
         disp(['Th_obs = ', num2str(Th_obs(Th_obs_ctr)) ,'C, r_obs = ', num2str(r_obs(Th_obs_ctr)), 'um']);
