@@ -43,7 +43,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
     else
         [mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
     end
-    
+
     if length(T_obs) ~= length(Th_obs);
         if length(T_obs) == 1;
             T_obs = repmat(T_obs,1,length(Th_obs));
@@ -63,7 +63,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
     end
 
     tolerance = 1e-4;
-    
+
     %% Start of the main routine
 
     for Th_obs_ctr = length(Th_obs):-1:1
@@ -106,22 +106,16 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
 
                 % This is for NaN-Catching. If the flower-boundary is crossed,
-                % Th_obs and radius_out_corrected become NaN. If only one of them
-                % becomes NaN, you requested strange things, such as a different
-                % pressureMinimum.
+                % Th_obs and radius_out_corrected become NaN.
                 Th_obs_calculated = NaN;
-                r_obs_calculated = NaN;
-                while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
-
+                while isnan(Th_obs_calculated)
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
                     [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
-                    
                     if isnan(Th_obs_calculated)
                         % we probably crossed the flower boundary
                         Th_inf_step = Th_inf_step/2;
                         Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
                     end
-
                 end
 
                 % Calculate the derivative
@@ -135,18 +129,14 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
                 % This is for NaN-Catching. See above for details
                 Th_obs_calculated = NaN;
-                r_obs_calculated = NaN;
-                while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
-
+                while isnan(Th_obs_calculated)
                     inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
                     [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
-
                     if isnan(Th_obs_calculated);
                         % we probably crossed the flower boundary
                         V_step = V_step/2;
                         V(Th_obs_ctr) = V(Th_obs_ctr) + V_step;
                     end
-
                 end
 
                 % Calculate the derivative
@@ -182,7 +172,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             % using Newton's method
             % The backslash here is a left multiplication of the inverse of the
             % Jacobian
-
             next_step_vec = Jc\(F_vec - root_pos);
 
             Th_inf_step = next_step_vec(1);
