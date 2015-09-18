@@ -85,16 +85,22 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             Th_obs_calculated_old = Th_obs_calculated;
             r_obs_calculated_old = r_obs_calculated;
 
+            % Sometimes it happens that we cross pressureMinimum. This is bad, 
+            % so prevent it from happening
+            while Th_inf(Th_obs_ctr) - Th_inf_step < T_pressureMinimum
+                Th_inf_step = Th_inf_step/2;
+            end
+
+            % Sometimes it happens that the V_step is too big and the volume would
+            % become negative. This is bad, so prevent it from happening
+            while V(Th_obs_ctr) - V_step < 0
+                V_step = V_step/2;
+            end
+
             Th_obs_calculated = NaN; % This is for NaN-Catching
             r_obs_calculated = NaN;
 
             while isnan(Th_obs_calculated) || isnan(r_obs_calculated)
-
-                % Sometimes it happens that we cross pressureMinimum. This is bad, so try
-                % to recover:
-                while Th_inf(Th_obs_ctr) - Th_inf_step < T_pressureMinimum
-                    Th_inf_step = Th_inf_step/2;
-                end
 
                 % First, do the step in Th_inf-direction
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
@@ -123,13 +129,6 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 Th_obs_grad_Th_inf = (Th_obs_calculated_old - Th_obs_calculated)/Th_inf_step;
                 % go back
                 Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) + Th_inf_step;
-
-                % Sometimes it happens that the V_step is too big and the volume would
-                % become negative. This is bad, so prevent it from happening and define
-                % an arbitrary step instead.
-                while V(Th_obs_ctr) - V_step < 0
-                    V_step = V_step/2;
-                end
 
                 % Now do the step in V-direction
                 V(Th_obs_ctr) = V(Th_obs_ctr) - V_step;
