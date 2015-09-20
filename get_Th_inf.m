@@ -121,9 +121,9 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 Jc = [r_obs_grad_Th_inf r_obs_grad_V; Th_obs_grad_Th_inf Th_obs_grad_V];
 
                 % The vectorised version of the function looks as follows
-                F_vec = [r_obs_calculated(3); Th_obs_calculated(3)]
+                curr_pos = [r_obs_calculated(3); Th_obs_calculated(3)];
 
-                if sum(((F_vec - root_pos).*[10; 1]).^2) < tolerance
+                if sum(((curr_pos - root_pos).*[10; 1]).^2) < tolerance
                     disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
                     break
                 elseif iterationCounter == 12
@@ -134,7 +134,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 % using Newton's method
                 % The backslash here is a left multiplication of the inverse of the
                 % Jacobian
-                next_step_vec = Jc\(F_vec - root_pos);
+                next_step_vec = Jc\(curr_pos - root_pos);
 
                 if sum((next_step_vec.*[100; 1]).^2) < tolerance^2;
                     disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
