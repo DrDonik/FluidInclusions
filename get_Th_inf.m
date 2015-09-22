@@ -23,6 +23,8 @@
 function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, mineralNumber, Th_inf, V)
     %% Preliminaries, set up all the necessary values, if they are not given
 
+    debug = 1;
+
     if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
 
     if nargin < 6
@@ -75,6 +77,12 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         curr_inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
         [r_obs_calculated_old, Th_obs_calculated_old] = get_r_obs_and_Th_obs(curr_inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
+        if debug
+            disp(['Input: Th_inf = ', num2str(Th_inf(Th_obs_ctr)), ', V = ', num2str(V(Th_obs_ctr))]);
+            disp(['Output: r = ', num2str(r_obs_calculated_old), ', Th_obs = ', num2str(Th_obs_calculated_old)]);
+            disp(' ');
+        end
+        
         Th_inf_step = -1;
         V_step = -V(Th_obs_ctr)*1e-2;
 
@@ -97,13 +105,13 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             Th_inf_inputs_to_process = [Th_inf(Th_obs_ctr) - Th_inf_step, Th_inf(Th_obs_ctr), Th_inf(Th_obs_ctr) - Th_inf_step];
             V_inputs_to_process = [V(Th_obs_ctr), V(Th_obs_ctr) - V_step, V(Th_obs_ctr) - V_step];
             curr_T_obs = T_obs(Th_obs_ctr);
-            
-            parfor i = 1:3
+
+            parfor (i = 1:3, 3)
                 curr_inclusionObject(i) = inclusion(Th_inf_inputs_to_process(i), V_inputs_to_process(i), mineralNumber);
                 [r_obs_calculated(i), Th_obs_calculated(i)] = get_r_obs_and_Th_obs(curr_inclusionObject(i), curr_T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
             end;
 
-            if any(isnan(Th_obs_calculated))
+            if any(isnan(Th_obs_calculated)) || any(isnan(r_obs_calculated))
                 % we probably crossed the flower boundary. Reduce the step
                 % and try again
                 Th_inf_step = Th_inf_step/2;
@@ -123,6 +131,15 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 % The vectorised version of the function looks as follows
                 curr_pos = [r_obs_calculated(3); Th_obs_calculated(3)];
 
+                Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
+                V(Th_obs_ctr) = V(Th_obs_ctr) - V_step;
+
+                if debug
+                    disp(['Input: Th_inf = ', num2str(Th_inf(Th_obs_ctr)), ', V = ', num2str(V(Th_obs_ctr))]);
+                    disp(['Output: r = ', num2str(curr_pos(1)), ', Th_obs = ', num2str(curr_pos(2))]);
+                    disp(' ');
+                end
+
                 if sum(((curr_pos - root_pos).*[10; 1]).^2) < tolerance
                     disp(['Deviation of Th_obs and r_obs smaller than ', num2str(tolerance)]);
                     break
@@ -140,13 +157,10 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                     disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
                     break
                 end
-                
-                Th_inf(Th_obs_ctr) = Th_inf(Th_obs_ctr) - Th_inf_step;
-                V(Th_obs_ctr) = V(Th_obs_ctr) - V_step;
 
                 Th_inf_step = next_step_vec(1);
                 V_step = next_step_vec(2);
-                
+
                 Th_obs_calculated_old = Th_obs_calculated(3);
                 r_obs_calculated_old = r_obs_calculated(3);
             end
@@ -155,7 +169,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         disp(['Th_obs = ', num2str(Th_obs(Th_obs_ctr)) ,'C, r_obs = ', num2str(r_obs(Th_obs_ctr)), 'um']);
         disp(['Th_inf = ', num2str(Th_inf(Th_obs_ctr)), 'C, V = ', num2str(V(Th_obs_ctr)), 'um^3']);
         disp('');
-        
+
         inclusionObject(Th_obs_ctr) = curr_inclusionObject(3);
 
     end
