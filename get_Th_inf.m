@@ -73,7 +73,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         iterationCounter = 0;
 
         curr_inclusionObject(Th_obs_ctr) = inclusion(Th_inf(Th_obs_ctr), V(Th_obs_ctr), mineralNumber);
-        [Th_obs_calculated_old, r_obs_calculated_old] = get_r_obs_and_Th_obs(curr_inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
+        [r_obs_calculated_old, Th_obs_calculated_old] = get_r_obs_and_Th_obs(curr_inclusionObject(Th_obs_ctr), T_obs(Th_obs_ctr), Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
 
         Th_inf_step = -1;
         V_step = -V(Th_obs_ctr)*1e-2;
