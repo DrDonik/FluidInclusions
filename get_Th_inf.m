@@ -79,7 +79,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
         if debug
             disp(['Input: Th_inf = ', num2str(Th_inf(Th_obs_ctr)), ', V = ', num2str(V(Th_obs_ctr))]);
-            disp(['Output: r = ', num2str(r_obs_calculated_old), ', Th_obs = ', num2str(Th_obs_calculated_old)]);
+            disp(['Output: r_obs = ', num2str(r_obs_calculated_old), ', Th_obs = ', num2str(Th_obs_calculated_old)]);
             disp(' ');
         end
         
@@ -136,7 +136,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
                 if debug
                     disp(['Input: Th_inf = ', num2str(Th_inf(Th_obs_ctr)), ', V = ', num2str(V(Th_obs_ctr))]);
-                    disp(['Output: r = ', num2str(curr_pos(1)), ', Th_obs = ', num2str(curr_pos(2))]);
+                    disp(['Output: r_obs = ', num2str(curr_pos(1)), ', Th_obs = ', num2str(curr_pos(2))]);
                     disp(' ');
                 end
 
