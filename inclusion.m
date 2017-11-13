@@ -54,10 +54,11 @@
 %   r
 %       The bubble radii at temperature T, in um.
 %       This property is calculated as soon as it is queried.
-%   p_l, p_v, p_isoTh
-%       The pressures of the liquid and vapour phase, respectively, at
-%       the temperature(s) T, in Pascal. p_isoTh is the liquid pressure on
-%       the iso-T_h curve (i.e. without bubble).
+%   p_l, p_v, p_isoTh, p_s
+%       p_l and p_v are the pressures of the liquid and vapour phase, 
+%       respectively, at the temperature(s) T, in Pascal.
+%       p_isoTh is the liquid pressure on the iso-T_h curve (i.e. without bubble).
+%       p_s is the saturation pressure (i.e., p_s = p_v in an infinite inclusion).
 %       These properties are calculated as soon as it is queried.
 %   rho_overall_at_T
 %       The mean density of the inclusionObject at the temperature(s) T
@@ -197,7 +198,7 @@ classdef inclusion < hgsetget
     
         function obj = inclusion(Th_inf, V, mineralNumber)
 
-            if nargin == 0;
+            if nargin == 0
                 Th_inf = 25+273.15;
                 V = 1e6; 
                 mineralNumber = 2;
@@ -270,10 +271,10 @@ classdef inclusion < hgsetget
             objProperties = struct;
             
             objProperties.Th_inf = obj.Th_inf;
-            if ~isempty(obj.store_Th_inf_r); objProperties.Th_inf_r = obj.Th_inf_r; end;
+            if ~isempty(obj.store_Th_inf_r); objProperties.Th_inf_r = obj.Th_inf_r; end
             objProperties.V = obj.V;
             objProperties.mineral = obj.mineral;
-            if ~isempty(obj.store_flowerBoundary); objProperties.flowerBoundary = obj.flowerBoundary; end;
+            if ~isempty(obj.store_flowerBoundary); objProperties.flowerBoundary = obj.flowerBoundary; end
             objProperties.T_pressureMinimum = obj.T_pressureMinimum;
             objProperties.r_pressureMinimum = obj.r_pressureMinimum;
             if ~isempty(obj.store_T_sp)
@@ -392,7 +393,7 @@ classdef inclusion < hgsetget
             % temperature instead of r_pressureMinimum.
             if nargin < 4
                 Th_obs_is_T_bin = 0;
-            elseif Th_obs_is_T_bin > 1;
+            elseif Th_obs_is_T_bin > 1
                 disp('Are you sure you want Th_obs_is_T_bin to be greater than one?')
                 disp('I guess you wanted to tell me to look for a different T_obs.')
                 disp('I will treat your query accordingly.')
@@ -436,7 +437,7 @@ classdef inclusion < hgsetget
                         R = [];
                         index = [];
                         return;
-                    end;
+                    end
                 elseif ~all(logical_indices)
                     disp('Not all entries in your array contain the requested temperature.')
                     decision = input('Do you want me to calculate all missing values? [y/N]: ', 's');
@@ -448,7 +449,7 @@ classdef inclusion < hgsetget
                         disp('Your match will probably not be correct.')
                     end
                     
-                end;
+                end
                 
                 sub_obj_array = obj_array(logical_indices);
 
@@ -483,7 +484,7 @@ classdef inclusion < hgsetget
                 disp('Make sure it contains Th_inf in the first and V in the second dimension.')
                 Th_inf = [];
                 V = [];
-            end;
+            end
             
         end
         
@@ -745,7 +746,7 @@ classdef inclusion < hgsetget
 
                 obj.store_T = [];
                 return
-            end;
+            end
             
             % We expect T to be input in C, convert it to K here
             value = value + 273.15;
