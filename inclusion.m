@@ -152,6 +152,7 @@ classdef inclusion < hgsetget
         p_l             % The liquid pressure at temperature(s) T, in Pa
         p_v             % The vapour pressure at temperature(s) T, in Pa
         p_isoTh         % The liquid pressure without bubble at temperature(s) T, in Pa
+        p_s             % the liquid and vapour pressure on the saturation curve (not in an inclusion!) at temperature(s) T, in Pa
         
         rho_overall_at_T        % The mean density of the inclusion at temperature(s) T, in kg/m^3
         flowerBoundary  % The minimum necessary Th_inf for this volume so that a bubble is possible
@@ -185,6 +186,7 @@ classdef inclusion < hgsetget
         store_p_l       % The liquid pressure at temperature(s) T, in Pa
         store_p_v       % The vapour pressure at temperature(s) T, in Pa
         store_p_isoTh   % The liquid pressure without bubble at temperature(s) T, in Pa
+        store_p_s       % The vapour pressure at temperature(s) T, in Pa
         store_rho_overall_at_T       % The mean density of the inclusion at temperature(s) T, in kg/m^3
         store_flowerBoundary         % The minimum necessary Th_inf for this volume so that a bubble is possible
     end
@@ -738,6 +740,7 @@ classdef inclusion < hgsetget
                 obj.store_p_l = [];
                 obj.store_p_v = [];
                 obj.store_p_isoTh = [];
+                obj.store_p_s = [];
                 obj.store_rho_overall_at_T = [];
 
                 obj.store_T = [];
@@ -761,12 +764,14 @@ classdef inclusion < hgsetget
             temp_store_p_l = obj.store_p_l;
             temp_store_p_v = obj.store_p_v;
             temp_store_p_isoTh = obj.store_p_isoTh;
+            temp_store_p_s = obj.store_p_s;
             temp_store_rho_overall_at_T = obj.store_rho_overall_at_T;
             
             obj.store_r = zeros(size(value));                                   
             obj.store_p_l = zeros(size(value));
             obj.store_p_v = zeros(size(value));
             obj.store_p_isoTh = zeros(size(value));
+            obj.store_p_s = zeros(size(value));
             obj.store_rho_overall_at_T = zeros(size(value));
 
             % save all the values that can be kept
@@ -777,12 +782,14 @@ classdef inclusion < hgsetget
                     obj.store_p_l(T_ctr) = temp_store_p_l(index);
                     obj.store_p_v(T_ctr) = temp_store_p_v(index);
                     obj.store_p_isoTh(T_ctr) = temp_store_p_isoTh(index);
+                    obj.store_p_s(T_ctr) = temp_store_p_s(index);
                     obj.store_rho_overall_at_T(T_ctr) = temp_store_rho_overall_at_T(index);
                 elseif value(T_ctr) >= obj.store_Th_inf || (~isempty(obj.store_Th_inf_r) && value(T_ctr) <= obj.store_Th_inf_r)
                     obj.store_r(T_ctr) = NaN;                                   
                     obj.store_p_l(T_ctr) = 0;
                     obj.store_p_v(T_ctr) = NaN;
                     obj.store_p_isoTh(T_ctr) = 0;
+                    obj.store_p_s(T_ctr) = NaN;
                     obj.store_rho_overall_at_T(T_ctr) = 0;
                 end
             end
@@ -837,6 +844,14 @@ classdef inclusion < hgsetget
             value = obj.store_p_isoTh;
         end
 	
+        function value = get.p_s(obj)
+            if ~isempty(obj.store_T) && (isempty(obj.store_p_s) || ~all(obj.store_p_s))
+                partPressure(obj);
+           end
+            
+            value = obj.store_p_s;
+        end
+        
     end
     	
     %% Methods saved in files in the @inclusion folder
