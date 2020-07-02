@@ -104,7 +104,7 @@
 %       match() (see above) to calculate them, it will speed up the process
 %       by a few seconds.
 
-classdef inclusion < hgsetget
+classdef inclusion < matlab.mixin.SetGet
     
     %% Properties
     

@@ -4,7 +4,7 @@ function coeffs = readIAPWS95data()
 
     global Coeffs
 
-    if isempty(Coeffs); 
+    if isempty(Coeffs) 
 
         fid = fopen('iapws95.dat', 'r');
 

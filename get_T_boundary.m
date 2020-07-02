@@ -42,7 +42,7 @@ function [T_boundary, r_boundary] = ...
     b = -0.625;
     mu = 1.256;
 
-    if calc_prograde_boundary; dir = 1; else dir = -1; end;
+    if calc_prograde_boundary; dir = 1; else; dir = -1; end
     T_boundary_working = obj.store_T_pressureMinimum;
 
     step = 1.25;
@@ -79,7 +79,7 @@ function [T_boundary, r_boundary] = ...
                     keyboard
                 end
             elseif iterationCounter > 1
-                while sign(T_boundary_working + dir*step - obj.store_Th_inf) == sign(calc_prograde_boundary);
+                while sign(T_boundary_working + dir*step - obj.store_Th_inf) == sign(calc_prograde_boundary)
                     % Make sure we don't cross Th_inf, since we know we
                     % will not find a bubble beyond that temperature.
                     step = step/5;
@@ -136,12 +136,12 @@ function [T_boundary, r_boundary] = ...
                 gm_out_corrected = NaN;
             end
 
-            if iterationCounter == 1; break; end;
+            if iterationCounter == 1; break; end
 
         end
         % When we reach here, we crossed T_boundary.
 
-        if iterationCounter == 1;
+        if iterationCounter == 1
             if isnan(gm_out_corrected)
                 % No minimum found; most probably there is no bubble possible
                 % in this volume at this temperature;

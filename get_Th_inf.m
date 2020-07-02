@@ -25,13 +25,13 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
     debug = 1;
 
-    if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end;
+    if length(Th_obs) ~= length(r_obs); inclusionObject = []; return; end
 
     if nargin < 6
         if nargin < 5
             [mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral();
             if nargin < 4
-                if nargin < 3; Th_obs_is_T_bin = 0; end;
+                if nargin < 3; Th_obs_is_T_bin = 0; end
                 T_obs = T_pressureMinimum - 273.15;
             end
         else
@@ -46,8 +46,8 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
         [mineralNumber, T_pressureMinimum] = inclusion.set_fi_mineral(mineralNumber);
     end
 
-    if length(T_obs) ~= length(Th_obs);
-        if length(T_obs) == 1;
+    if length(T_obs) ~= length(Th_obs)
+        if length(T_obs) == 1
             T_obs = repmat(T_obs,1,length(Th_obs));
         else
             inclusionObject = [];
@@ -59,7 +59,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
 
     if Th_obs < T_pressureMinimum
         Th_obs_is_Th_inf_r = 1;
-        if nargin < 6; Th_inf = 2*T_pressureMinimum - Th_obs + 2; end;
+        if nargin < 6; Th_inf = 2*T_pressureMinimum - Th_obs + 2; end
     else
         Th_obs_is_Th_inf_r = 0;
     end
@@ -109,7 +109,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
             parfor (i = 1:3, 3)
                 curr_inclusionObject(i) = inclusion(Th_inf_inputs_to_process(i), V_inputs_to_process(i), mineralNumber);
                 [r_obs_calculated(i), Th_obs_calculated(i)] = get_r_obs_and_Th_obs(curr_inclusionObject(i), curr_T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r);
-            end;
+            end
 
             if any(isnan(Th_obs_calculated)) || any(isnan(r_obs_calculated))
                 % we probably crossed the flower boundary. Reduce the step
@@ -153,7 +153,7 @@ function inclusionObject = get_Th_inf(Th_obs, r_obs, Th_obs_is_T_bin, T_obs, min
                 % Jacobian
                 next_step_vec = Jc\(curr_pos - root_pos);
 
-                if sum((next_step_vec.*[100; 1]).^2) < tolerance^2;
+                if sum((next_step_vec.*[100; 1]).^2) < tolerance^2
                     disp(['Step size in Th_inf and V smaller than ', num2str(tolerance/100)]);
                     break
                 end
