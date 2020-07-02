@@ -182,7 +182,7 @@ end
 
 function [r_obs_calculated, Th_obs_calculated] = get_r_obs_and_Th_obs(inclusionObject, T_obs, Th_obs_is_T_bin, Th_obs_is_Th_inf_r)
     inclusionObject.T = T_obs;
-    r_obs_calculated = inclusionObject.r(inclusionObject.T == T_obs);
+    r_obs_calculated = inclusionObject.r(abs(inclusionObject.T - T_obs) < 1e-6);
 
     if Th_obs_is_T_bin
         if Th_obs_is_Th_inf_r
